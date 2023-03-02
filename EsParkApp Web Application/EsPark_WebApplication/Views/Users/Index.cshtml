@@ -1,0 +1,461 @@
+﻿@{
+    ViewData["Title"] = "Kullanıcılar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="py-5 px-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row text-center">
+                        <h3 class="page-title col-sm-10 pt-1 text-start">Kullanıcılar</h3>
+                        <button type="button" class="btn btn btn-outline-dark col-sm-2 align-self-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Kullanıcı Ekle</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="user_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>KullanıcıAdı</th>
+                                <th>AdSoyad</th>
+                                <th>Tip</th>
+                                <th>TelefonNo</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end Users Table-->
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel">Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" onclick="" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form">
+                    <input type="hidden" value="0" id="updateId" name="updateId" />
+
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Kullanıcı Adı<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="Username" name="Username" placeholder="Kullanıcı Adı">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-password-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Şifre<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="password" id="Password" name="Password" placeholder="Şifre">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-password-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Şifre (Tekrar)<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="password" id="AgainPassword" name="Password" placeholder="Şifre (Tekrar)">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">İsim Soyisim<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="Realname" name="Realname" placeholder="İsim Soyisim">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-phone-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Telefon No<span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="Phone" name="Phone" placeholder="(XXX) XXX XX XX" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label align-self-center mb-lg-0 text-end" style="font-weight:bold">Tip</label>
+                        <div class="col-sm-9">
+                            <select id="Authority" name="Authority" class="form-select" aria-label="Default select example">
+                                <option disabled selected>Operatör / Yönetici Seçiniz.</option>
+                                <option value="0">Operatör</option>
+                                <option value="1">Yönetici</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label text-end" style="font-weight:bold">Durum</label>
+                        <div class="col-md-9">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Status" id="radio_aktif" value="1" />
+                                <label class="form-check-label" for="radio_aktif">Aktif</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Status" id="radio_pasif" value="-1" />
+                                <label class="form-check-label" for="radio_pasif">Pasif</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="document.location.reload(true);" data-bs-dismiss="modal">VAZGEC</button>
+            </div>
+        </div>
+    </div>
+</div><!--end User's Modal-->
+@section scripts {
+    <script type="text/javascript">
+
+        var userTablo = null;
+
+        $((_$) => {
+            getUsersAjax();
+        });
+
+        var getUsersAjax = () => {
+            if (userTablo == null)
+                userTablo = $('#user_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowUsers", "Users")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.RowId;
+                            }, "name": "RowId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Username;
+                            }, "name": "Username"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Realname;
+                            }, "name": "Realname"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Authority == 1 ? 'YÖNETİCİ' : 'OPERATÖR';
+                            }, "name": "Authority"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Phone;
+                            }, "name": "Phone"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                let check = row.Statuss == 1 ? 'checked' : 'nchecked';
+                                return `<div class="form-check form-switch form-switch-warning">
+                                                                                <input class="form-check-input" type="checkbox" id="checked_${row.Statuss}" onclick="javascript:checkUsers(${row.RowId});" ${check}>
+                                                                                </div>`;
+                            }, "name": "Statuss"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal(${row.RowId})"><i class="dripicons-document-edit""></i></button>
+
+                                                                                                      <button type="button" id="delete" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteUser(${row.RowId})"><i class="dripicons-trash""></i></button>`;
+
+                            }, "name": "RowId", "name": "RowId"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            className: 'btn blue',
+                            text: '<i class="far fa-copy"></i> Kopyala',
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn green',
+                            text: '<i class="far fa-file-excel"></i> Excel',
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn red',
+                            text: '<i class="far fa-file-pdf"></i> PDF'
+                        },
+
+                    ],
+                    initComplete: function (settings, json) {
+                        $('#user_table_filter input').unbind();
+                        $('#user_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                userTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+        var checkUsers = (checkId) => {
+            $.getJSON('@Url.Action("CheckUsers","Users")', { request: checkId }, (d, s) => {
+
+                if (s == 'success') {
+                    const Toast = Swal.mixin({
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 1000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+                    if (userTablo != null)
+                        userTablo.ajax.reload();
+
+
+                    Toast.fire({
+                        icon: 'success',
+                        title: 'Durum değştirildi.'
+                    })
+                }
+                else {
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Durum değştirilemedi.'
+                    })
+                }
+
+            })
+        }
+
+        var getUpdateOrAdd = () => {
+            if (document.getElementById("updateId").value > 0) {
+                javascript: updateUser();
+            }
+            else {
+                javascript: addUser();
+            }
+        }
+
+        var getsetModal = (selectId) => {
+
+            $('#updateId').val("");
+            $.getJSON('@Url.Action("GetUser", "Users")', { sId: selectId }, (d, s) => {
+                if (s === 'success') {
+                    $('#Username').val(d.USERNAME);
+                    $('#Password').val(d.PASSWORD);
+                    $('#AgainPassword').val(d.PASSWORD);
+                    $('#Realname').val(d.REALNAME);
+                    $('#Phone').val(d.PHONE);
+                    $('#updateId').val(d.ROWID);
+                    $("#Authority").val(d.AUTHORITY);
+
+                    if (d.STATUS == 1)
+                        document.getElementById('radio_aktif').checked = true;
+                    else
+                        document.getElementById('radio_pasif').checked = true;
+
+                    $('#staticBackdrop').modal('show');
+                }
+            })
+        }
+
+        var updateUser = () => {
+
+            var Username = document.getElementById("Username").value;
+            var Password = document.getElementById("Password").value;
+            var AgainPassword = document.getElementById("AgainPassword")
+            var Realname = document.getElementById("Realname").value;
+            var Phone = document.getElementById("Phone").value;
+
+
+            if (!Username || !Password || !AgainPassword || !Realname || !Phone) {
+                Swal.fire(
+                    'Güncelleme Başarısız!',
+                    'Lütfen KullanıcıAdı / Şifre / Şifre(Tekrar) / İsim Soyisim / Telefon No bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+            var formData = new FormData(document.getElementById('update-form'));
+
+            $.ajax({
+
+
+                type: "POST",
+                url: '@Url.Action("UpdateUser","Users")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (d) {
+                    if (d.Status == true) {
+                        console.log('Gelen -> ', d);
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (userTablo != null)
+                            userTablo.ajax.reload();
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+
+                },
+
+            });
+            if (userTablo != null)
+                userTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+        }
+
+        var addUser = () => {
+
+            var UsernameControl = $('[name = "Username"]').val();
+            var PasswordControl = $('[name = "Password"]').val();
+            var AgainPasswordControl = $('[name ="AgainPassword"]').val();
+            var RealnameControl = $('[name ="Realname"]').val();
+            var PhoneControl = $('[name = "Phone"]').val();
+
+            if (document.getElementById('radio_aktif').checked == true) {
+                var StatusControl = $('[name = "radio_aktif"]').val();
+            }
+            else {
+                var StatusControl = $('[name = "radio_pasif"]').val();
+            }
+
+            if (!UsernameControl || !PasswordControl || !AgainPassword || !RealnameControl || !PhoneControl) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen KullanıcıAdı / Şifre / Şifre(Tekrar) / İsim Soyisim / Telefon No bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+            var formData = new FormData(document.getElementById("update-form"));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddUser","Users")',
+                data: formData,
+                async: true,
+                contentType: false,
+                processData: false,
+                success: data => {
+
+                    if (data.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (userTablo != null)
+                            userTablo.ajax.reload();
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+
+                        $('#staticBackdrop').modal('hide');
+
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+                    $('#staticBackdrop').modal('hide');
+                },
+            });
+        }
+
+        var deleteUser = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteUser","Users")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+                                    userTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (userTablo != null)
+                                userTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+    </script>
+}

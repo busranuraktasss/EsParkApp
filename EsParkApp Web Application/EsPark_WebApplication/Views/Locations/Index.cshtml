@@ -1,0 +1,400 @@
+﻿@{
+    ViewData["Title"] = "Lokasyonlar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 py-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row text-center">
+                        <h3 class="page-title col-sm-10 text-start">Lokasyon Tanımları</h3>
+                        <button type="button" class="btn btn btn-outline-dark col-sm-2 align-self-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Lokasyon Ekle</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="lokasyonlar_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Kısa Adı</th>
+                                <th>Tam Adı</th>
+                                <th>Kapasite</th>
+                                <th>Telefon No</th>
+                                <th>Muhasebe Kodu</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end Location Table-->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel">Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" onclick="" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form">
+                    <input type="hidden" value="0" id="updateId" name="updateId" />
+
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-4 form-label align-self-center mb-lg-0 text-end">Lokasyon Kısa Adı<span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" id="locname" name="locname" placeholder="Lokasyon Kısa Adı">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-4 form-label align-self-center mb-lg-0 text-end">Lokasyon Tam Adı<span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" id="locaddress" name="locaddress" placeholder="Lokasyon Tam Adı">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-number-input" style="font-weight:bold" class="col-sm-4 form-label align-self-center mb-lg-0 text-end">Kapasite</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="number" id="capacity" name="capacity" placeholder="Kapasite">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-phone-input" style="font-weight:bold" class="col-sm-4 form-label align-self-center mb-lg-0 text-end">Telefon No<span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" id="phone" name="phone" placeholder="(XXX) XXX XX XX" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-phone-input" style="font-weight:bold" class="col-sm-4 form-label align-self-center mb-lg-0 text-end">Muhasebe Kodu<span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="text" id="muhkod" name="muhkod" placeholder="Muhasebe Kodu" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-4 form-label text-end" style="font-weight:bold">Durum</label>
+                        <div class="col-md-8">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Durum" id="radio_aktif" value="1" />
+                                <label class="form-check-label" for="radio_aktif">Aktif</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="Durum" id="radio_pasif" value="0" />
+                                <label class="form-check-label" for="radio_pasif">Pasif</label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="document.location.reload(true);" data-bs-dismiss="modal">VAZGEC</button>
+            </div>
+        </div>
+    </div>
+</div><!--end Location's Modal-->
+@section scripts {
+    <script type="text/javascript">
+
+        var locationTablo = null;
+
+        $((_$) => {
+            getLocationsAjax();
+        });
+
+        var getLocationsAjax = () => {
+            if (locationTablo == null)
+                locationTablo = $('#lokasyonlar_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowLocations", "Locations")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.LocId;
+                            }, "name": "LocId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Locname;
+                            }, "name": "Locname"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Locaddress;
+                            }, "name": "Locaddress"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Capacity;
+                            }, "name": "Capacity"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Phone;
+                            }, "name": "Phone"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Muhkod;
+                            }, "name": "Muhkod"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal(${row.LocId})"><i class="dripicons-document-edit"></i></button>
+         <button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteLocation(${row.LocId})"><i class="dripicons-trash"></i></button>`;
+
+                            }, "name": "LocId", "name": "LocId"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#lokasyonlar_table_filter input').unbind();
+                        $('#lokasyonlar_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                locationTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+                    }
+                })
+        }
+
+        var getUpdateOrAdd = () => {
+            if (document.getElementById("updateId").value > 0) {
+                javascript: updateLocation();
+            }
+            else {
+                javascript: addLocation();
+            }
+        }
+
+        var addLocation = () => {
+
+            var LocnameControl = document.getElementById("locname").value;
+            var LocaddressControl = document.getElementById("locaddress").value;
+            var CapacityControl = document.getElementById("capacity").value;
+            var PhoneControl = document.getElementById("phone").value;
+            var MuhkodControl = document.getElementById("muhkod").value;
+
+
+            if (document.getElementById('radio_aktif').checked == true) {
+
+                var DurumControl = 1;
+            }
+            else {
+                var DurumControl = 0;
+            }
+
+            if (!LocnameControl || !LocaddressControl || !PhoneControl || !MuhkodControl) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen Tam Adı / Kısa Adı / Telefon No / Muhasebe Kodu bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+            $.post('@Url.Action("AddLocation", "Locations")', { isactive: DurumControl, locname: LocnameControl, locaddress: LocaddressControl, capacity: CapacityControl, phone: PhoneControl, muhkod: MuhkodControl }, (d, s) => {
+                if (s === "success") {
+
+                    if (d.Status == true) {
+
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (locationTablo != null)
+                            locationTablo.ajax.reload();
+
+
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+
+                        $('staticBackdrop').modal("hide");
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+                }
+
+            });
+
+            if (locationTablo != null)
+                locationTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+
+
+
+        }
+
+        var getsetModal = (selectId) => {
+
+            $('#updateId').val("");
+
+            $.post('@Url.Action("getLocation", "Locations")', { sId: selectId }, (d, s) => {
+
+                if (s === 'success') {
+                    $('#staticBackdrop').modal('show');
+                    $('#updateId').val(d.data.LOCID);
+
+                    $('#locname').val(d.data.LOCNAME);
+                    $('#loccode').val(d.data.LOCCODE);
+                    $('#locaddress').val(d.data.LOCADDRESS);
+                    $('#capacity').val(d.data.CAPACITY);
+                    $('#phone').val(d.data.PHONE);
+                    $('#muhkod').val(d.data.MUHKOD);
+
+                    if (d.data.ISACTIVE == 1) {
+                        document.getElementById('radio_aktif').checked = true;
+                    }
+                    else {
+                        document.getElementById('radio_pasif').checked = true;
+                    }
+                }
+            })
+            if (locationTablo != null)
+                locationTablo.ajax.reload();
+        }
+
+        var updateLocation = () => {
+
+            var UpdateId = document.getElementById("updateId").value;
+            var Locname = document.getElementById("locname").value;
+            var Locaddress = document.getElementById("locaddress").value;
+            var Capacity = document.getElementById("capacity").value;
+            var Phone = document.getElementById("phone").value;
+            var Muhkod = document.getElementById("muhkod").value;
+
+            var isactive = 0;
+
+            if ($('#radio_aktif').prop('checked'))
+                isactive = 1;
+
+            if (!Locname || !Locaddress || !Phone || !Muhkod) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen Tam Adı / Kısa Adı / Telefon No / Muhasebe Kodu bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+
+            $.post('@Url.Action("UpdateLocation","Locations")', { updateId: UpdateId, isactive: isactive, locname: Locname, locaddress: Locaddress, capacity: Capacity, phone: Phone, muhkod: Muhkod }, (d, s) => {
+                if (s == 'success') {
+                    if (d.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (locationTablo != null)
+                            locationTablo.ajax.reload();
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+                }
+            })
+
+
+            if (locationTablo != null)
+                locationTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+
+
+
+        }
+
+        var deleteLocation = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteLocation","Locations")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+                                    locationTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                } else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (locationTablo != null)
+                                locationTablo.ajax.reload();
+                        });
+
+                    }
+                });
+
+        }
+    </script>
+}

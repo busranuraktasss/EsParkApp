@@ -1,0 +1,795 @@
+﻿@{
+    ViewData["Title"] = "Tarifeler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 py-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row text-center">
+                        <h3 class="page-title col-sm-10 text-start">Tarife Bilgileri</h3>
+                        <button type="button" class="btn btn btn-outline-dark col-sm-2 align-self-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Tarife Ekle</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="tarifeler_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Tarife Adı</th>
+                                <th>Tolerans</th>
+                                <th>Sabit Ücret</th>
+                                <th>Sabit Süre</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end ParkTariff Table-->
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width:700px;">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel">Tarife Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form">
+                    <input type="hidden" value="0" id="AddOrUpdateId" name="AddOrUpdateId" />
+
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">Tarife Adı<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="text" id="tariffname" name="tariffname" placeholder="Tarife Adı">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-number-input" style="font-weight:bold" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">Tolerans<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" id="tolerance" name="tolerance" placeholder="Tolerans">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-number-input" style="font-weight:bold" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">Sabit Ücret<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" id="fixedentryfee" name="fixedentryfee" placeholder="Sabit Ücret">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-number-input" style="font-weight:bold" class="col-sm-2 form-label align-self-center mb-lg-0 text-end">Sabit Süre<span class="text-danger">*</span></label>
+                        <div class="col-sm-10">
+                            <input class="form-control" type="number" id="fixedentryduration" name="fixedentryduration" placeholder="Sabit Süre">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <div class="col-sm-3 ">
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">00:00 - 00:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H00000030" name="H00000030">
+
+                                </div>
+
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">00:30 - 01:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H00300100" name="H00300100">
+
+                                </div>
+
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">01:00 - 01:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H01000130" name="H01000130">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">01:30 - 02:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H01300200" name="H01300200">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">02:00 - 02:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H02000230" name="H02000230">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">02:30 - 03:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H02300300" name="H02300300">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">03:00 - 03:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H03000330" name="H03000330">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">03:30 - 04:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H03300400" name="H03300400">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">04:00 - 04:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H04000430" name="H04000430">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">04:30 - 05:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H04300500" name="H04300500">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">05:00 - 05:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H05000530" name="H05000530">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">05:30 - 06:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H05300600" name="H05300600">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-3 ">
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">06:00 - 06:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H06000630" name="H06000630">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">06:30 - 07:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H06300700" name="H06300700">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">07:00 - 07:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H07000730" name="H07000730">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">07:30 - 08:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H07300800" name="H07300800">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">08:00 - 08:30<span class="text-danger">*</span> </label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H08000830" name="H08000830">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">08:30 - 09:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H08300900" name="H08300900">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">09:00 - 09:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H09000930" name="H09000930">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">09:30 - 10:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H09301000" name="H09301000">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">10:00 - 10:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H10001030" name="H10001030">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">10:30 - 11:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H10301100" name="H10301100">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">11:00 - 11:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H11001130" name="H11001130">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">11:30 - 12:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H11301200" name="H11301200">
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-sm-3 ">
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">12:00 - 12:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H12001230" name="H12001230">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">12:30 - 13:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H12301300" name="H12301300">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">13:00 - 13:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H13001330" name="H13001330">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">13:30 - 14:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H13301400" name="H13301400">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">14:00 - 14:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H14001430" name="H14001430">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">14:30 - 15:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H14301500" name="H14301500">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">15:00 - 15:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H15001530" name="H15001530">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">15:30 - 16:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H15301600" name="H15301600">
+
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">16:00 - 16:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H16001630" name="H16001630">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">16:30 - 17:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H16301700" name="H16301700">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">17:00 - 17:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H17001730" name="H17001730">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">17:30 - 18:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H17301800" name="H17301800">
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-sm-3">
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">18:00 - 18:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H18001830" name="H18001830">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">18:30 - 19:00<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H18301900" name="H18301900">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">19:00 - 19:30<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H19001930" name="H19001930">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">19:30 - 20:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H19302000" name="H19302000">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">20:00 - 20:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H20002030" name="H20002030">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">20:30 - 21:00<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H20302100" name="H20302100">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">21:00 - 21:30<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H21002130" name="H21002130">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">21:30 - 22:00<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H21302200" name="H21302200">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">22:00 - 22:30<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H22002230" name="H22002230">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">22:30 - 23:00<span class="text-danger">*</span></label>
+
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H22302300" name="H22302300">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">23:00 - 23:30<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H23002330" name="H23002330">
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label for="example-number-input" class="col-sm-7 form-label align-self-center mb-lg-0 text-end">23:30 - 00:00<span class="text-danger">*</span></label>
+                                <div class="col-sm-5">
+                                    <input class="form-control" type="number" id="H23302400" name="H23302400">
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="document.location.reload(true);" data-bs-dismiss="modal">VAZGEÇ</button>
+            </div>
+        </div>
+    </div>
+</div><!--end ParkTariff's Modal-->
+@section scripts {
+    <script type="text/javascript">
+
+        var tariffTablo = null;
+
+        $((_$) => {
+            getTariffsAjax();
+        });
+
+        var getTariffsAjax = () => {
+            if (tariffTablo == null)
+                tariffTablo = $('#tarifeler_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowTariffs", "ParkTariffs")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.tariffid;
+                            }, "name": "tariffid"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.tariffname;
+                            }, "name": "tariffname"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.tolerance;
+                            }, "name": "tolerance"
+                        },
+                        {"render": (data, type, row) => {if(row.fixedentryfee == null) return row.fixedentryfee; else return '₺ ' + row.fixedentryfee;}, "name": "fixedentryfee"},
+                        {
+                            "render": (data, type, row) => {
+                                return row.fixedentryduration;
+                            }, "name": "fixedentryduration"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal(${row.tariffid})"><i class="dripicons-document-edit""></i></button>
+                                                     <button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteTariff(${row.tariffid})"><i class="dripicons-trash""></i></button>`;
+
+                            }, "name": "tariffid", "name": "tariffid"
+                        },
+
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#tarifeler_table_filter input').unbind();
+                        $('#tarifeler_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                tariffTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+        var getUpdateOrAdd = () => {
+            if (document.getElementById("AddOrUpdateId").value > 0) {
+                javascript: updateTariff();
+            }
+            else {
+                javascript: addTariff();
+            }
+        }
+
+        var addTariff = () => {
+
+            var TariffnameControl = $('[name= "tariffname"]').val();
+            var ToleranceControl = $('[name = "tolerance"]').val();
+            var FixedentryfeeControl = $('[name= "fixedentryfee"]').val();
+            var FixedentrydurationControl = $('[name= "fixedentryduration"]').val();
+
+            var H00000030Control = $('[name = "H00000030"]').val();
+            var H00300100Control = $('[name = "H00300100"]').val();
+            var H01000130Control = $('[name = "H01000130"]').val();
+            var H01300200Control = $('[name = "H01300200"]').val();
+            var H02000230Control = $('[name = "H02000230"]').val();
+            var H02300300Control = $('[name = "H02300300"]').val();
+            var H03000330Control = $('[name = "H03000330"]').val();
+            var H03300400Control = $('[name = "H03300400"]').val();
+            var H04000430Control = $('[name = "H04000430"]').val();
+            var H04300500Control = $('[name = "H04300500"]').val();
+            var H05000530Control = $('[name = "H05000530"]').val();
+            var H05300600Control = $('[name = "H05300600"]').val();
+            var H06000630Control = $('[name = "H06000630"]').val();
+            var H06300700Control = $('[name = "H06300700"]').val();
+            var H07000730Control = $('[name = "H07000730"]').val();
+            var H07300800Control = $('[name = "H07300800"]').val();
+            var H08000830Control = $('[name = "H08000830"]').val();
+            var H08300900Control = $('[name = "H08300900"]').val();
+            var H09000930Control = $('[name = "H09000930"]').val();
+            var H09301000Control = $('[name = "H09301000"]').val();
+            var H10001030Control = $('[name = "H10001030"]').val();
+            var H10301100Control = $('[name = "H10301100"]').val();
+            var H11001130Control = $('[name = "H11001130"]').val();
+            var H11301200Control = $('[name = "H11301200"]').val();
+            var H12001230Control = $('[name = "H12001230"]').val();
+            var H12301300Control = $('[name = "H12301300"]').val();
+            var H13001330Control = $('[name = "H13001330"]').val();
+            var H13301400Control = $('[name = "H13301400"]').val();
+            var H14001430Control = $('[name = "H14001430"]').val();
+            var H14301500Control = $('[name = "H14301500"]').val();
+            var H15001530Control = $('[name = "H15001530"]').val();
+            var H15301600Control = $('[name = "H15301600"]').val();
+            var H16001630Control = $('[name = "H16001630"]').val();
+            var H16301700Control = $('[name = "H16301700"]').val();
+            var H17001730Control = $('[name = "H17001730"]').val();
+            var H17301800Control = $('[name = "H17301800"]').val();
+            var H18001830Control = $('[name = "H18001830"]').val();
+            var H18301900Control = $('[name = "H18301900"]').val();
+            var H19001930Control = $('[name = "H19001930"]').val();
+            var H19302000Control = $('[name = "H19302000"]').val();
+            var H20002030Control = $('[name = "H20002030"]').val();
+            var H20302100Control = $('[name = "H20302100"]').val();
+            var H21002130Control = $('[name = "H21002130"]').val();
+            var H21302200Control = $('[name = "H21302200"]').val();
+            var H22002230Control = $('[name = "H22002230"]').val();
+            var H22302300Control = $('[name = "H22302300"]').val();
+            var H23002330Control = $('[name = "H23002330"]').val();
+            var H23302400Control = $('[name = "H23302400"]').val();
+
+
+            if (!TariffnameControl || !ToleranceControl || !FixedentryfeeControl || !FixedentrydurationControl || !H00300100Control || !H00000030Control ||
+                !H01000130Control || !H01300200Control || !H02000230Control || !H02300300Control || !H03000330Control || !H03300400Control || !H04000430Control ||
+                !H04300500Control || !H05000530Control || !H05300600Control || !H06000630Control || !H06300700Control || !H07000730Control || !H07300800Control ||
+                !H08000830Control || !H08300900Control || !H09000930Control || !H09301000Control || !H10001030Control || !H10301100Control || !H11001130Control ||
+                !H11301200Control || !H12001230Control || !H12301300Control || !H13001330Control || !H13301400Control || !H14001430Control || !H14301500Control ||
+                !H15001530Control || !H15301600Control || !H16001630Control || !H16301700Control || !H17001730Control || !H17301800Control || !H18001830Control ||
+                !H18301900Control || !H19001930Control || !H19302000Control || !H20002030Control || !H20302100Control || !H21002130Control || !H21302200Control ||
+                !H22002230Control || !H22302300Control || !H23002330Control || !H23302400Control) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen * olan yerleri boş bırakmayınız.',
+                    'warning'
+                )
+                return;
+            }
+
+            var formData = new FormData(document.getElementById("update-form"));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddTariff","ParkTariffs")',
+                data: formData,
+                async: true,
+                contentType: false,
+                processData: false,
+                success: data => {
+
+                    if (data.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (tariffTablo != null)
+                            tariffTablo.ajax.reload();
+
+
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+                },
+
+            });
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var getsetModal = (selectId) => {
+            $('#AddOrUpdateId').val();
+            $.post('@Url.Action("GetTariff" ,"ParkTariffs" )', { sId: selectId }, (d, s) => {
+                if (s === 'success') {
+                    $('#staticBackdrop').modal('show');
+                    $('#AddOrUpdateId').val(d.data.TARIFFID);
+
+                    $('#tariffname').val(d.data.TARIFFNAME);
+                    $('#tolerance').val(d.data.TOLERANCE);
+                    $('#fixedentryfee').val(d.data.FIXEDENTRYFEE);
+                    $('#fixedentryduration').val(d.data.FIXEDENTRYDURATION);
+                    $('#recdate').val(d.data.RECDATE);
+                    $('#H00000030').val(d.data.H00000030);
+                    $('#H00300100').val(d.data.H00300100);
+                    $('#H01000130').val(d.data.H01000130);
+                    $('#H01300200').val(d.data.H01300200);
+                    $('#H02000230').val(d.data.H02000230);
+                    $('#H02300300').val(d.data.H02300300);
+                    $('#H03000330').val(d.data.H03000330);
+                    $('#H03300400').val(d.data.H03300400);
+                    $('#H04000430').val(d.data.H04000430);
+                    $('#H04300500').val(d.data.H04300500);
+                    $('#H05000530').val(d.data.H05000530);
+                    $('#H05300600').val(d.data.H05300600);
+                    $('#H06000630').val(d.data.H06000630);
+                    $('#H06300700').val(d.data.H06300700);
+                    $('#H07000730').val(d.data.H07000730);
+                    $('#H07300800').val(d.data.H07300800);
+                    $('#H08000830').val(d.data.H08000830);
+                    $('#H08300900').val(d.data.H08300900);
+                    $('#H09000930').val(d.data.H09000930);
+                    $('#H09301000').val(d.data.H09301000);
+                    $('#H10001030').val(d.data.H10001030);
+                    $('#H10301100').val(d.data.H10301100);
+                    $('#H11001130').val(d.data.H11001130);
+                    $('#H11301200').val(d.data.H11301200);
+                    $('#H12001230').val(d.data.H12001230);
+                    $('#H12301300').val(d.data.H12301300);
+                    $('#H13001330').val(d.data.H13001330);
+                    $('#H13301400').val(d.data.H13301400);
+                    $('#H14001430').val(d.data.H14001430);
+                    $('#H14301500').val(d.data.H14301500);
+                    $('#H15001530').val(d.data.H15001530);
+                    $('#H15301600').val(d.data.H15301600);
+                    $('#H16001630').val(d.data.H16001630);
+                    $('#H16301700').val(d.data.H16301700);
+                    $('#H17001730').val(d.data.H17001730);
+                    $('#H17301800').val(d.data.H17301800);
+                    $('#H18001830').val(d.data.H18001830);
+                    $('#H18301900').val(d.data.H18301900);
+                    $('#H19001930').val(d.data.H19001930);
+                    $('#H19302000').val(d.data.H19302000);
+                    $('#H20002030').val(d.data.H20002030);
+                    $('#H20302100').val(d.data.H20302100);
+                    $('#H21002130').val(d.data.H21002130);
+                    $('#H21302200').val(d.data.H21302200);
+                    $('#H22002230').val(d.data.H22002230);
+                    $('#H22302300').val(d.data.H22302300);
+                    $('#H23002330').val(d.data.H23002330);
+                    $('#H23302400').val(d.data.H23302400);
+
+
+                }
+            })
+        }
+
+        var updateTariff = () => {
+
+            var Tariffname = document.getElementById("tariffname").value;
+            var Tolerance = document.getElementById("tolerance").value;
+            var Fixedentryfee = document.getElementById("fixedentryfee").value;
+            var Fixedentryduration = document.getElementById("fixedentryduration").value;
+
+
+
+            if (!Tariffname || !Tolerance || !Fixedentryfee || !Fixedentryduration) {
+                Swal.fire(
+                    'Güncelleme Başarısız!',
+                    'Lütfen * olan boşlukları doldurunuz.',
+                    'warning'
+                )
+                return;
+            }
+            var formData = new FormData(document.getElementById('update-form'));
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateTariff","ParkTariffs")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (d) {
+                    if (d.Status == true) {
+                        console.log('Gelen -> ', d);
+
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (tariffTablo != null)
+                            tariffTablo.ajax.reload();
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+                },
+
+            });
+            if (tariffTablo != null)
+                tariffTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var deleteTariff = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteTariff","ParkTariffs")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+                                    tariffTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                } else {
+                                    console.log(d);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (tariffTablo != null)
+                                tariffTablo.ajax.reload();
+                        });
+
+                    }
+                });
+        }
+
+    </script>
+}

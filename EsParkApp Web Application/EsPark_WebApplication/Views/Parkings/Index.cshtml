@@ -1,0 +1,207 @@
+﻿@{
+    ViewData["Title"] = "Online Araç Çıkışı";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 py-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header  ">
+                    <h3 class="page-title pt-1 text-start">Online Araç Çıkışı</h3>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="aracCıkısı_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Plaka</th>
+                                <th>Başlangıç</th>
+                                <th>Tolerans</th>
+                                <th>Peşin Odenen</th>
+                                <th>Aşılan Süre (DK)</th>
+                                <th>Ücret</th>
+                                <th>Cihaz No</th>
+                                <th>Lokasyon</th>
+                                <th>Kullanıcı</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        var parkingsTablo = null;
+
+        $((_$) => {
+            getParkingsAjax();
+        });
+
+        var getParkingsAjax = () => {
+            if (parkingsTablo == null)
+                parkingsTablo = $('#aracCıkısı_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowParkings", "Parkings")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingId;
+                            }, "name": "parkingId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.startdate;
+                            }, "name": "startdate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingduration;
+                            }, "name": "parkingduration"
+                        },
+                        { "render": (data, type, row) => { if (row.parkingfee == null) return row.parkingfee; else return '₺ ' + row.parkingfee;}, "name": "parkingfee" },
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingdurationforovertime;
+                            }, "name": "parkingdurationforovertime"
+                        },
+                        { "render": (data, type, row) => { if (row.parkingfeeforovertime == null) return row.parkingfeeforovertime; else return '₺ ' + row.parkingfeeforovertime;}, "name": "parkingfeeforovertime" },
+                        {
+                            "render": (data, type, row) => {
+                                return row.deviceId;
+                            }, "name": "deviceId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.locId;
+                            }, "name": "locId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.rowId;
+                            }, "name": "rowId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:parkOut(${row.parkingId})"><i class="dripicons-exit"></i></button>`;
+                            }, "name": "rowId"
+                        },
+
+
+
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#aracCıkısı_table_filter input').unbind();
+                        $('#aracCıkısı_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                parkingsTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+        var parkOut = (selectId) => {
+
+            var token = 'k7lFizdIpOicanrvRN3xSXbOOLABkMCN';
+
+            var formData = new FormData();
+
+            invoiceInfoObj = new Array();
+            invoiceInfoObj =
+                [
+                    tutar = 6.00,
+                    Plaka = "41 ya 585",
+                    FisYazisi = "asd",
+                    MuhKodu = "234",
+                    KayitNo = 123,
+                    JobId = 1,
+                    PayType = 12234,
+                    Ettn = "hvksjdhgjkvdfskgjdfkl",
+                    NowTime = "21-01-2022"
+                ];
+
+
+            $.post('@Url.Action("CreateInvoice","DebitRecord")', { InvoiceInfo: invoiceInfoObj, token: token }, (d, s) => {
+
+            })
+
+
+
+            //Swal.fire({
+            //    title:'Online araç çıkışı yapmak istediğinize emin misiniz?',
+            //    icon:'question',
+            //    showCancelButton: true,
+            //    cancelButtonText: 'Hayır',
+            //    confirmButtonColor: '#4a804d',
+            //    cancelButtonColor: '#b22222',
+            //    confirmButtonText: 'Evet',
+            //})
+            //    .then((result) => {
+            //        if(result.value == true) {
+            //            var postData = [{ "tutar": "1", "plaka": "41 ya 585", "FisYazisi": "12345", "MuhKodu": "999", "JobId": "5297", "PayType":"123" }
+            //            ];
+
+            //            $.getJSON('@Url.Action("ParkOut","Parkings")', {sId: selectId}, (d,s) => {
+            //                if(s == "success"){
+            //                    if(d.Status == true){
+            //                        parkingsTablo.ajax.reload();
+            //                        Swal.fire({ title: 'Online araç çıkışı gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' })
+            //                    } else {
+            //                        Swal.fire({
+            //                            icon: 'error',
+            //                            title: 'Oops...',
+            //                            text: 'Online araç çıkışı gerçekleşemedi.'
+            //                        });
+            //                    }
+            //                }
+            //                if (parkingsTablo != null)
+            //                    parkingsTablo.ajax.reload();
+            //            })
+            //        }
+            //    })
+        }
+
+
+    </script>
+}

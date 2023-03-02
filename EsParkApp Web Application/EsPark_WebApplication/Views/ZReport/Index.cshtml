@@ -1,0 +1,222 @@
+﻿@{
+    ViewData["Title"] = "Açık Kalan Vardiyalar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 py-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header ">
+                    <label class="col-7" style="font-size:24px;">Açık Kalan Vardiyalar</label>
+                    <button type="button" class="btn btn btn-outline-warning col-2 " onclick="javascript:deleteCheck();" style="height:45px; font-size:15px;">Seçili Vardiyaları Kapat</button>
+                    <button type="button" class="btn btn btn-outline-warning col-2 " onclick="javascript:deleteCheckAll();" style="height:45px; font-size:15px;">Tüm Vardiyaları Kapat</button>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="openShift_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th></th>@*Checkbox*@
+                                <th>Id</th>
+                                <th>Vardiya Tarihi</th>
+                                <th>Lokasyon</th>
+                                <th>Kullanıcı Adı</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+
+        var openShiftsTablo = null;
+
+        $((_$) => {
+            getOpenShiftsAjax();
+        });
+
+        var getOpenShiftsAjax = () => {
+            if (openShiftsTablo == null)
+                openShiftsTablo = $('#openShift_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: false,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowOpenShifts", "ZReport")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+
+                            "render": (data, type, row) => {
+
+                                return `<div class="form-check form-check-inline"><input class="form-check-input debts" id="${row.ShiftId}" type="checkbox"></div>`;
+                            }, "name": "Check"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.ShiftId;
+                            }, "name": "ShiftId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Vardiya;
+                            }, "name": "Vardiya"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Lokasyon;
+                            }, "name": "Lokasyon"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.Kullanici;
+                            }, "name": "Kullanici"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#openShift_table_filter input').unbind();
+                        $('#openShift_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                openShiftsTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+
+
+        var deleteCheck = () => {
+            if (document.querySelectorAll('.debts:checked').length == 0) {
+                Swal.fire(
+                    'Seçili Vardiya Bulunamadı.'
+                )
+                return;
+            }
+
+            let selectedDebts = document.querySelectorAll('.debts:checked');
+            let parkingControlIDs = [];
+            for (let debt of selectedDebts) {
+                parkingControlIDs.push(debt.id.replace('checked_', ''));
+                console.log(parkingControlIDs);
+            }
+
+            Swal.fire({
+                title: 'Seçili vardiyaları kapatmak istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.post('@Url.Action("CheckShift","ZReport")', { pr: parkingControlIDs }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    openShiftsTablo.ajax.reload();
+                                    Swal.fire({ title: 'Vardiya kapatma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Vardiya kapatma işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (openShiftsTablo != null)
+                                openShiftsTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+
+        var deleteCheckAll = () => {
+
+            if (openShiftsTablo == null) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Açık Vardiya Bulunmamaktadır.'
+                });
+            }
+
+            let allDebts = $('.debts:checkbox');
+            let parkingControlsId = [];
+            for (let debt of allDebts) {
+                parkingControlsId.push(debt.id.replace('checked_', ''));
+
+            }
+
+            Swal.fire({
+                title: 'Tüm vardiyaları kapatmak istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.post('@Url.Action("CheckShift","ZReport")', { pr: parkingControlsId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    openShiftsTablo.ajax.reload();
+                                    Swal.fire({ title: 'Vardiya kapatma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Vardiya kapatma işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (openShiftsTablo != null)
+                                openShiftsTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+    </script>
+}

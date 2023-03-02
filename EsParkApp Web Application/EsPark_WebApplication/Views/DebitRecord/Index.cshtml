@@ -1,0 +1,1860 @@
+﻿@{
+    ViewData["Title"] = "Borç İşlemleri";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section css{
+
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.2.3/css/buttons.bootstrap5.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.bootstrap5.css" />
+}
+
+    <div class="px-5 py-5">
+        <div class="px-5 py-5">
+            <div class="px-5 py-5">
+                <div class="row">
+                    <ul class="nav nav-tabs " role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#sorgula" role="tab" aria-selected="true">SORGULA - SİL - AKTAR</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#ekle" role="tab" aria-selected="false">BORÇ EKLE</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#sil" role="tab" aria-selected="false">SİLİNEN BORÇLAR</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="pt-2 tab-content">
+                    <div class="tab-pane active" id="sorgula" role="tabpanel">
+                        <div class="container-fluid pt-5">
+                            <div class="row">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="mb-3 row">
+                                            <div class="col-6 ">
+                                                <div class="row my-2">
+                                                    <label for="example-text-input" style="font-weight:bold ; font-size:16px" class="col-4 form-label align-self-center mb-lg-0 text-center ">ARAÇ PLAKASI</label>
+                                                    <div class="col-4">
+                                                        <input class="form-control" style="width:80%" type="text" id="licenseplate" name="licenseplate">
+                                                    </div>
+                                                    <button class="btn btn-outline-warning col-3 text-center" style="align-self:center" onclick="javascript:showParking();">GÖRÜNTÜLE</button>
+                                                </div>
+                                                <div class="row my-2 pt-4">
+                                                    <label for="example-text-input" style="font-weight:bold ; font-size:16px" class="col-7 form-label align-self-center mb-lg-0 text-start me-2 ">ARAÇ GENEL BORÇ BİLGİSİ</label>
+                                                </div>
+                                                <div class="row my-2 pt-1">
+                                                    <label for="example-text-input" style="font-weight:bold ; font-size:16px" class="col-7 form-label align-self-center mb-lg-0 text-start me-2 ">Aracın şu ana kadar olan toplam borcu</label>
+                                                    <input type="text" disabled="disabled" class="col-4 text-end" id="toplamBorc" name="toplamBorc" />
+                                                </div>
+                                                <div class="row my-2 pt-1">
+                                                    <label for="example-text-input" style="font-weight:bold ; font-size:16px" class="col-7 form-label align-self-center mb-lg-0 text-start me-2 ">Araçtan şu ana kadar tahsil edilen tutar</label>
+                                                    <input type="text" disabled="disabled" class="col-4 text-end" id="tahsilEdilenTutar" name="tahsilEdilenTutar" />
+                                                </div>
+                                                <div class="row my-2 pt-1">
+                                                    <label for="example-text-input" style="font-weight:bold ; font-size:16px" class="col-7 form-label align-self-center mb-lg-0 text-start me-2 ">KALAN TOPLAM BORÇ</label>
+                                                    <input type="text" disabled="disabled" class="col-4 text-end" id="kalanToplamBorc" name="kalanToplamBorc" />
+
+                                                </div>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="btn btn-outline-dark my-2 text-center" style="height:50%; width:100%" onclick=" javascript: deleteCheck();">SEÇİLİ BORÇLARI SİL</button>
+                                                <button class="btn btn-outline-success text-center" style="height:50%; width:100%" onclick="javascript: transferCheck();">SEÇİLİ BORÇLARI AKTAR</button>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="btn btn-outline-dark my-2 text-center" style="height:50%; width:100%" onclick="javascript: deleteAll()">TÜM BORCU SİL</button>
+                                                <button class="btn btn-outline-success text-center" style="height:50%; width:100%" onclick="javascript: transferCheckAll();">TÜM BORCU AKTAR</button>
+                                            </div>
+                                            <div class="col-2">
+                                                <button class="btn btn-outline-danger my-2 text-center" style="height:50%; width:100%" onclick="checkLawyer();">SEÇİLİ BORÇLARI İCRA DOSYASINA AKTAR</button>
+                                                <button class="btn btn-outline-danger text-center" style="height:50%; width:100%" onclick="checkNotLawyer();">SEÇİLİ BORÇLARI İCRADAN GERİ AL</button>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!--Header-->
+                        <div class="container-fluid mt-5">
+                            <div class="row mt-5">
+                                <div class="col-12 ">
+                                    <div class="card">
+                                        <div class="table-responsive p-2">
+                                            <table id="borc_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>@*Checkbox*@
+                                                        <th>PLAKA</th>
+                                                        <th>KULLANICI</th>
+                                                        <th>LOKASYON</th>
+                                                        <th>BAŞLANGIÇ</th>
+                                                        <th>BİTİŞ</th>
+                                                        <th>AŞILAN SÜRE (DK)</th>
+                                                        <th>ÜCRET</th>
+                                                        <th></th>@*Checkbox*@
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--TabPanel 1.sayfa-->
+                    <div class="tab-pane" id="ekle" role="tabpanel">
+                        <div class="row">
+                            <p class="col-3"></p>
+                            <ul class="nav nav-tabs col-6" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="tab" href="#kayitOlustur" role="tab" aria-selected="true">KAYIT OLUŞTURARAK</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="tab" href="#parkKayitSec" role="tab" aria-selected="false">PARK KAYITLARINDAN SEÇEREK</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="pt-2 tab-content">
+                            <div class="tab-pane active" id="kayitOlustur" role="tabpanel">
+                                <div class="card">
+                                    <div class="nav-tabs-custom text-center">
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link text-center active" data-bs-toggle="tab" href="#manuelPlaka" role="tab"><i class="mdi mdi-folder-network-outline"></i>MANUEL PLAKA GİRİŞİ</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link text-center" data-bs-toggle="tab" href="#aboneArac" role="tab"><i class="mdi mdi-hand-pointing-up"></i>ABONELERDEN ARAÇ SEÇİMİ</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content align-self-sm-center" style="width:500px">
+                                        <div class="tab-pane active p-3" id="manuelPlaka" role="tabpanel">
+                                            <div class="card">
+                                                <p type="text" class=" text-center pt-2" style="color:#1c2d41; background-color:white ; border-style:none ; font-size:20px ; font-weight:200">PLAKA GİRİŞİ</p>
+                                                <input class="form-control align-self-sm-center my-3" style="width:370px" type="text" id="ekle_plaka1" name="ekle_plaka1">
+                                            </div>
+                                        </div><!--end Manuel Plaka Girişi-->
+                                        <div class="tab-pane p-3" id="aboneArac" role="tabpanel">
+                                            <div class="card ">
+                                                <div class=" align-self-center px-4 pt-4" style="width:500px">
+                                                    <label class="col-3 form-label text-start" for="ekle_Dropdown2"><b>ABONE SEÇİMİ </b></label>
+                                                    <select class="col-md-8 dropdown-control" id="ekle_CustomerDropdown2" name="cusId"></select>
+                                                </div>
+                                                <div class=" align-self-center px-4 pt-4" style="width:500px">
+                                                    <label class="col-3 form-label text-start" for="ekle_Dropdown3"><b>ARAÇ SEÇİMİ </b></label>
+                                                    <select class="col-md-8 dropdown-control" id="ekle_opDropdown3" name="PlateId"></select>
+                                                </div>
+                                            </div>
+                                        </div><!--end Abonelerden Araç Seçimi-->
+                                    </div>
+                                    <div class="align-self-sm-center mx-lg-5" style="width:500px">
+                                        <label class="col-3 form-label text-start mx-4" for="ekle_Dropdown1"><b>KULLANICI SEÇİMİ</b></label>
+                                        <select class="col-md-6 dropdown-control" id="ekle_userDropdown1" name="PıdId"></select>
+                                    </div>
+                                    <div class="align-self-sm-center mx-lg-5 row" style="width:500px">
+                                        <label class="col-3 form-label text-start mx-3 my-2 " for="ekle_date"><b>TARİH SEÇİMİ</b></label>
+                                        <div class="col-6 mx-2 ">
+                                            <input class="form-control" type="date" value="date" id="ekle_date" name="ekle_date">
+
+                                        </div>
+                                    </div>
+                                    <div class="align-self-sm-center mx-lg-5 row" style="width:500px">
+                                        <label class="col-3 form-label text-start mx-3 my-2 " for="ekle_Dropdown1"><b>ÜCRET</b></label>
+                                        <div class="col-6 mx-2 ">
+                                            <input class="form-control " typeof="number" id="ekle_ucret" name="ekle_ucret" placeholder="0,00" />
+                                        </div>
+                                    </div>
+                                    <div class="text-center">
+                                        <button class="btn btn-outline-warning  align-self-sm-center my-3 " style="height:80px; width:468px" onclick=" addDebt();">BORCU EKLE</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="parkKayitSec" role="tabpanel">
+                                <div class="card">
+                                    <div class="mb-3 row">
+                                        <p class="col-2"></p>
+                                        <div class="col-4">
+                                            <div class=" mt-3 row" style="width:100%">
+                                                <label class="col-3 form-label text-start my-2" for="ekle_plaka2"><b>ARAÇ PLAKASI</b></label>
+                                                <div class="col-6 ">
+                                                    <input class="form-control " typeof="text" id="ekle_plaka2" name="ekle_plaka2" />
+                                                </div>
+                                            </div>
+                                            <div class="  mt-4 row" style="width:100%">
+                                                <label class="col-3 form-label text-start my-2 " for="ekle_date1"><b>TARİH</b></label>
+                                                <div class="col-6">
+                                                    <input class="form-control" type="date" value="date" id="ekle_date1" name="ekle_date1">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 ">
+                                            <button class="btn btn-outline-warning my-2 text-center" style="width:100%; height:100%;" onclick="javascript: showParkRecord();">GÖRÜNTÜLE</button>
+                                        </div>
+                                        <p class="col-2"></p>
+                                    </div>
+                                    <div class="row mx-1">
+                                        <div class="col-12 ">
+                                            <div class="card">
+                                                <div class="table-responsive p-2">
+                                                    <table id="parkRecord_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>ID</th>
+                                                                <th>PLAKA</th>
+                                                                <th>LOKASYON</th>
+                                                                <th>KULLANICI</th>
+                                                                <th>BAŞLANGIÇ</th>
+                                                                <th>BİTİŞ</th>
+                                                                <th>AŞILAN SÜRE (DK)</th>
+                                                                <th>ÖDENMESİ GEREKEN ÜCRET</th>
+                                                                <th>ÖDENEN ÜCRET</th>
+                                                                <th>BORCA DÖNÜŞTÜR</th>
+                                                            </tr>
+                                                        </thead>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--TabPanel 2.sayfa-->
+                    <div class="tab-pane" id="sil" role="tabpanel">
+                        <div class="card">
+                            <div class="mb-3 row">
+                                <div class="col-5">
+                                    <div class="nav-tabs-custom text-center pt-2">
+                                        <ul class="nav nav-tabs" role="tablist">
+                                            <li class="nav-item">
+                                                <a class="nav-link text-center active" data-bs-toggle="tab" href="#aracBazinda" role="tab"><i class="mdi mdi-car-hatchback"></i> ARAÇ BAZINDA</a>
+                                            </li>
+                                            <li class="nav-item">
+                                                <a class="nav-link text-center" data-bs-toggle="tab" href="#tarihAraligi" role="tab"><i class="mdi mdi-calendar-week"></i> TARİH ARALIĞI</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <div class="tab-content align-self-sm-center" style="width:100%">
+                                        <div class="tab-pane active p-3" id="aracBazinda" role="tabpanel">
+                                            <div class="card">
+                                                <p type="text" class=" text-center pt-2" style="color:#1c2d41; background-color:white ; border-style:none ; font-size:19px ; font-weight:200">ARAÇ PLAKASI</p>
+                                                <input class="form-control align-self-sm-center my-3" style="width:370px" type="text" id="silinen_plaka1" name="silinen_plaka1">
+                                            </div>
+                                        </div><!--end Araç Bazında-->
+                                        <div class="tab-pane p-3" id="tarihAraligi" role="tabpanel">
+                                            <div class="card ">
+                                                <div class=" align-self-center my-2" style="width:90%">
+                                                    <label class=" form-label text-start" for="silinen_date1"><b>BAŞLANGIÇ TARİHİ</b></label>
+                                                    <div>
+                                                        <input class="form-control" type="date" value="date" id="silinen_date1" name="silinen_date1">
+                                                    </div>
+                                                </div>
+                                                <div class=" align-self-center my-2" style="width:90%">
+                                                    <label class="form-label text-start" for="silinen_date2"><b>BİTİŞ TARİHİ</b></label>
+                                                    <div class=" my-2">
+                                                        <input class="form-control" type="date" value="date" id="silinen_date2" name="silinen_date2">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div><!--end Tarih Aralığı-->
+                                    </div>
+                                </div>
+                                <div class="col-3 ">
+                                    <button class="btn btn-outline-warning text-center mx-5 my-5" style="width:70%; height:70%;" onclick="    javascript: showDeletedDebts();">GÖRÜNTÜLE</button>
+                                </div>
+                                <div class="col-4 ">
+                                    <div class="row mt-2" style="height:50% ; width:90%;">
+                                        <button class="btn btn-outline-dark my-2 text-center" onclick="javascript: transferDeletedDebts();"><i class="mdi mdi-upload"></i>SEÇİLİ BORÇLARI GERİ YÜKLE</button>
+                                    </div>
+                                    <div class="row" style="height:50% ; width:90%;">
+                                        <button class="btn btn-outline-dark  my-2  text-center" onclick="javascript: allTransferDeletedDebts();"><i class="mdi mdi-upload-multiple"></i>TÜM BORCU GERİ YÜKLE</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="row mx-1">
+                                <div class="col-12 ">
+                                    <div class="card">
+                                        <div class="table-responsive p-2">
+                                            <table id="deletedParkRecords_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>@*Checkbox*@
+                                                        <th>PLAKA</th>
+                                                        <th>KULLANICI</th>
+                                                        <th>LOKASYON</th>
+                                                        <th>BAŞLANGIÇ</th>
+                                                        <th>BİTİŞ</th>
+                                                        <th>AŞILAN SÜRE (DK)</th>
+                                                        <th>ÜCRET</th>
+                                                    </tr>
+                                                </thead>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div><!--TabPanel 3.sayfa-->
+                </div>
+            </div>
+        </div>
+    </div><!--Borç İşlemleri Tablosu-->
+    <!--TABPANEL-->
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <input type="text" disabled="disabled" class=" text-center " style="color:white; background-color:#1c2d41 ; border-style:none ; width:220px" id="plaka1" name="plaka1" />
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div><!--end modal-header-->
+                <div class="modal-body">
+                    <form id="update-form">
+                        <input type="hidden" value="0" id="updateId" name="updateId" />
+                        <input type="text" disabled="disabled" class=" text-center" style="color:#1c2d41; background-color:white ; border-style:none ; width:480px ; font-size:50px ; font-weight:bold" id="plaka2" name="plaka2" />
+                        <div class="row my-2 pt-1">
+                            <label for="example-text-input" style=" font-size:16px" class="col-5 form-label align-self-center mb-lg-0 text-start me-2 ">Silinecek Borç Tutarı</label>
+                            <input type="text" disabled="disabled" class="col-6 text-center" id="silinecekBorcTutarı" name="silinecekBorcTutarı" />
+                        </div>
+                        <div class="row my-2 pt-1">
+                            <label for="example-text-input" style=" font-size:16px" class="col-5 form-label align-self-center mb-lg-0 text-start me-2 ">Silinme Sebebi</label>
+                            <div class="col-6" style="border-style:solid">
+                                <div class="form-check form-check-inline col-4">
+                                    <input class="form-check-input" type="radio" name="silinmeSebebi" id="tahsilat" />
+                                    <label class="form-check-label" for="tahsilat">TAHSİLAT</label>
+                                </div>
+                                <div class="form-check form-check-inline col-6">
+                                    <input class="form-check-input" type="radio" name="silinmeSebebi" id="kaliciSilme" />
+                                    <label class="form-check-label" for="kaliciSilme">KALICI SİLME</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-2 pt-1">
+                            <label for="example-text-input" style=" font-size:16px" class="col-5 form-label align-self-center mb-lg-0 text-start me-2 ">E-Arşiv Fatura</label>
+                            <div class="col-6" style="border-style:solid ">
+                                <div class="form-check form-check-inline col-4">
+                                    <input class="form-check-input" type="radio" name="fatura" id="olustur" />
+                                    <label class="form-check-label" for="olustur">OLUŞTUR</label>
+                                </div>
+                                <div class="form-check form-check-inline col-6">
+                                    <input class="form-check-input" type="radio" name="fatura" id="islemYapma" />
+                                    <label class="form-check-label" for="islemYapma">İŞLEM YAPMA</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row my-2 pt-1">
+                            <label style=" font-size:16px" class=" form-label mb-lg-0 text-start me-2 ">Açıklama</label>
+                            <textarea id="aciklama" name="aciklama" rows="4" class="form-control"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-m" onclick="javascript:deleteSelect();">KAYDET</button>
+                    <button type="button" class="btn btn-primary btn-m" data-bs-dismiss="modal">VAZGEC</button>
+                </div>
+            </div>
+        </div>
+    </div><!--end Borçları Sil Modal-->
+    <div class="modal fade" id="staticBackdrop1" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <input type="text" disabled="disabled" class=" text-center " style="color:white; background-color:#1c2d41 ; border-style:none ; width:220px" id="plaka3" name="plaka3" />
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div><!--end modal-header-->
+                <div class="modal-body">
+                    <div class="row">
+                        <ul class="nav nav-tabs " role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#manuelPlakaGirisi" role="tab" aria-selected="true">MANUEL PLAKA GİRİŞİ</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#aboneAraciSecimi" role="tab" aria-selected="false">ABONE ARACI SEÇİMİ</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                    <form id="transfer-form">
+                        <input type="hidden" value="0" id="transferId" name="transferId" />
+                        <div class="pt-2 tab-content">
+                            <div class="tab-pane active" id="manuelPlakaGirisi" role="tabpanel">
+                                <p type="text" class=" text-center" style="color:#1c2d41; background-color:white ; border-style:none ; width:480px ; font-size:30px ; font-weight:bold">PLAKA GİRİŞİ</p>
+                                <input class="form-control mx-5 " style="width:370px" type="text" id="transferPlaka" name="transferPlaka">
+                            </div>
+                            <div class="tab-pane" id="aboneAraciSecimi" role="tabpanel">
+                                <div class="mb-3 row">
+                                    <label class="col-3 form-label text-start" for="Dropdown2"><b>Abone </b></label>
+                                    <select class="col-md-9 dropdown-control" id="CustomerDropdown2" name="cusId"></select>
+                                </div>
+                                <div class="mb-3 row">
+                                    <label class="col-3 form-label text-start" for="Dropdown3"><b>Araç </b></label>
+                                    <select class="col-md-9 dropdown-control" id="opDropdown3" name="PlateId"></select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-success btn-m" onclick=" javascript: transferControl();">AKTAR</button>
+                    <button type="button" class="btn btn-primary btn-m" data-bs-dismiss="modal">VAZGEC</button>
+                </div>
+            </div>
+        </div>
+    </div><!--end Borçları Aktar Modal-->
+    @section scripts {
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap5.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/dataTables.buttons.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.bootstrap5.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.2.3/js/buttons.html5.js"></script>
+
+
+    <script type="text/javascript">
+
+        var parkingTablo = null;
+        var parkRecordTablo = null;
+        var deletedDebtsTablo = null;
+
+        $((_$) => {
+            getDropdown2();
+            ekle_getDropdown2();
+            ekle_getDropdown1();
+            getDate();
+
+        });
+
+        var getDate = () => {
+            var today = new Date();
+
+            document.getElementById("ekle_date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+            document.getElementById("ekle_date1").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+            document.getElementById("silinen_date1").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+            document.getElementById("silinen_date2").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+
+        }
+
+        var showParking = () => {
+
+            javascript: getShowParkingsAjax();
+            javascript: getTET();
+            javascript: getTB();
+            javascript: getKTB();
+        }
+
+        var getShowParkingsAjax = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (parkingTablo != null) {
+                parkingTablo.destroy();
+                parkingTablo = null;
+            }
+
+            if (parkingTablo == null) {
+                parkingTablo = $('#borc_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[0, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowParkings", "DebitRecord")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.sId = PlakaControl;
+                        }
+
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+
+                                return `<div class="form-check form-check-inline"><input class="form-check-input debts" id="${row.parkingDebtId}" type="checkbox"></div>`;
+                            }, "name": "parkingDebtId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.rowId;
+                            }, "name": "rowId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.locId;
+                            }, "name": "locId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.startdate;
+                            }, "name": "startdate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.enddate;
+                            }, "name": "enddate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingdurationforovertime;
+                            }, "name": "parkingdurationforovertime"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                if (parseFloat(row.paidfeeforovertime).toFixed(2) == null) return parseFloat(row.paidfeeforovertime).toFixed(2); else return '₺ ' + parseFloat(row.paidfeeforovertime).toFixed(2);
+                            }, "name": "paidfeeforovertime"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                let check = row.Lawyer == true ? 'checked' : 'nchecked';
+                                if (row.lawyer == true) {
+                                    return `<div class="form-check form-check-inline"><input class="form-check-input debts2" style="background-color:#D50000; border-color:#D50000;"id="${row.parkingDebtId}" type="checkbox"></div>`;
+                                }
+                                else {
+                                    return `<div class="form-check form-check-inline"><input class="form-check-input debts2" style="background-color:#FFB822; border-color:#FFB822" id="${row.parkingDebtId}" type="checkbox"></div>`;
+                                }
+
+                            }, "name": "parkingDebtId"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            className: 'btn blue',
+                            text: '<i class="far fa-copy"></i> Kopyala',
+                               
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn green',
+                            text: '<i class="far fa-file-excel"></i> Excel',
+                            
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn red',
+                            text: '<i class="far fa-file-pdf"></i> PDF',
+                            orientation: 'landscape',
+                                alignment: "center",
+                                exportOptions: {columns: [0, 1, 2, 3, 4, 5, 6, 7, 8]},
+
+                                customize: function (doc) {
+                                    doc.styles.tableHeader.alignment = 'left';
+                                    doc.content[1].table.widths = [76, 76, 76, 76, 76, 76, 76, 76, 76];
+                                }
+                        },
+
+                    ],
+                    initComplete: function (settings, json) {
+                        $('#parking_table_filter input').unbind();
+                        $('#parking_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                parkingTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+                    }
+                })
+            } else parkingTablo.ajax.reload();
+        }
+
+        //Araç Genel Borç Bilgisi
+        var getTET = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            $('#tahsilEdilenTutar').val("");
+
+            $.post('@Url.Action("GetTET", "DebitRecord")', { sId: PlakaControl }, (d, s) => {
+                $('#tahsilEdilenTutar').val(d.data);
+            })
+        }
+
+        var getTB = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            $('#toplamBorc').val("");
+
+            $.post('@Url.Action("GetTB", "DebitRecord")', { sId: PlakaControl }, (d, s) => {
+                $('#toplamBorc').val(d.data);
+            })
+        }
+
+        var getKTB = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            $('#kalanToplamBorc').val("");
+
+            $.post('@Url.Action("GetKTB", "DebitRecord")', { sId: PlakaControl }, (d, s) => {
+                $('#kalanToplamBorc').val(d.data);
+            })
+        }
+
+        //Seçili Borçları Sil-Verilerin Çağrıldığı Yer
+        var deleteCheck = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (!PlakaControl) {
+                Swal.fire(
+                    'Araç bulunamadı.'
+                )
+                return;
+            }
+            if (document.querySelectorAll('.debts:checked').length == 0) {
+                Swal.fire(
+                    'Seçili Borç Kaydı Bulunamadı.'
+                )
+                return;
+            }
+            $('#staticBackdrop').modal('show');
+
+            $('#plaka1').val('BORCU SİL - PLAKA :' + PlakaControl);
+
+            //PLAKA
+            $('#plaka2').val(PlakaControl);
+
+            //CHECK OLAN SATIRLARIN ID'si
+            var checkedDebts = document.querySelectorAll('.debts:checked');
+            for (let debt of checkedDebts) {
+                // console.log(debt.id.replace('checked_', ''));
+                javascript: getSBT(debt.id.replace('checked_', ''));
+            }
+
+
+        }
+
+        //Tüm Borçları Sil- Verilerin Çağrıldığı Yer
+        var deleteAll = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (!PlakaControl) {
+                Swal.fire('Araç bulunamadı.')
+                return;
+            }
+
+            if ($('.debts:checkbox').not(this).prop('checked', this.checked).length == 0) {
+                Swal.fire(
+                    'Borç Kaydı Bulunamadı.')
+                return;
+            }
+            $('#staticBackdrop').modal('show');
+
+            $('#plaka1').val('BORCU SİL - PLAKA :' + PlakaControl);
+
+            //PLAKA
+            $('#plaka2').val(PlakaControl);
+
+            //Checkboxların heppsi Checked Yapıldı
+            var checkedDebts = $('.debts:checkbox').not(this).prop('checked', this.checked);
+            for (let debt of checkedDebts) {
+                // console.log(debt.id.replace('checked_', ''));
+                javascript: getSBT(debt.id.replace('checked_', ''));
+            }
+
+
+        }
+
+        //Seçili Olan Borçların Toplamı
+        var getSBT = (checkId) => {
+
+            toplam = 0;
+            $.post('@Url.Action("GetSBT", "DebitRecord")', { sId: checkId }, (d, s) => {
+
+
+                toplam += d.data;
+                $('#silinecekBorcTutarı').val(parseFloat(toplam).toFixed(2));
+            })
+        }
+
+        //SEÇİLİ BORÇLARI SİL
+        var deleteSelect = () => {
+
+            var licenseplate = document.getElementById("plaka2").value;
+            var silinecekBorcTutarı = document.getElementById("silinecekBorcTutarı").value;
+
+            //tüm borçlar
+            if (document.querySelectorAll('.debts:checked').length == 0 || document.querySelectorAll('.debts:checked').length == $('.debts:checkbox').not(this).prop('checked', this.checked).length) {
+
+
+
+                if ($('#tahsilat').prop('checked')) {
+                    javascript: addDebtpaymentAll();
+                }
+                else if ($('#kaliciSilme').prop('checked')) {
+                    javascript: deleteAllParking();
+                }
+                else {
+                    Swal.fire(
+                        'Silme başarısız!',
+                        'Lütfen Silinme Sebebini Seçiniz.',
+                        'warning'
+                    )
+                }
+
+            }
+            //seçili borçlar
+            else {
+                var checkedDebts = document.querySelectorAll('.debts:checked');
+                for (let debt of checkedDebts) {
+
+                    if ($('#tahsilat').prop('checked')) {
+                        javascript: addDebtpayment();
+                    }
+                    else if ($('#kaliciSilme').prop('checked')) {
+                        javascript: deleteParking(debt.id.replace('checked_', ''));
+                    }
+                    else {
+                        Swal.fire(
+                            'Silme başarısız!',
+                            'Lütfen Silinme Sebebini Seçiniz.',
+                            'warning'
+                        )
+                    }
+                }
+            }
+        }
+
+        var addDebtpayment = () => {
+
+            var BorcControl = $('[name = "silinecekBorcTutarı"]').val().replace('.', ',');
+            var AciklamaControl = $('[name = "aciklama"]').val();
+
+
+            var checkedDebts = document.querySelectorAll('.debts:checked');
+            for (let debt of checkedDebts) {
+                var ParkingControl = debt.id.replace('checked_', '');
+            }
+            var formData = new FormData();
+            formData.append('silinecekBorcTutarı', BorcControl)
+            formData.append('aciklama', AciklamaControl)
+            formData.append('parkingId', ParkingControl)
+
+
+            if ($('#olustur').prop('checked')) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddDebtpaymentArchieve","DebitRecord")',
+                    data: formData,
+                    async: true,
+                    contentType: false,
+                    processData: false,
+                    success: data => {
+                        if (data.Status == true) {
+
+                            const Toast = Swal.mixin({
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Borç silme işlemi başarıyla gerçekleşti.'
+                            })
+                            if (parkingTablo != null)
+                                parkingTablo.ajax.reload();
+                        }
+                        else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Borç silme işlemi gerçekleşemedi.'
+                            });
+                        }
+                    },
+                });
+            }
+            else if ($('#islemYapma').prop('checked')) {
+
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddDebtpayment","DebitRecord")',
+                    data: formData,
+                    async: true,
+                    contentType: false,
+                    processData: false,
+                    success: data => {
+                        if (data.Status == true) {
+
+                            const Toast = Swal.mixin({
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 2000,
+                                timerProgressBar: true,
+                                didOpen: (toast) => {
+                                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                                }
+                            })
+                            Toast.fire({
+                                icon: 'success',
+                                title: 'Borç silme işlemi başarıyla gerçekleşti.'
+                            })
+                            if (parkingTablo != null)
+                                parkingTablo.ajax.reload();
+                        }
+                        else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Borç silme işlemi gerçekleşemedi.'
+                            });
+                        }
+                    },
+                });
+            }
+            else {
+                Swal.fire(
+                    'Silme başarısız!',
+                    'Lütfen Silinme Sebebini Seçiniz.',
+                    'warning'
+                )
+            }
+
+            $('#staticBackdrop').modal('hide');
+
+
+
+        }
+
+        var deleteParking = (checkId) => {
+
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.post('@Url.Action("DeleteParking","DebitRecord")', { pr: checkId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    parkingTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (parkingTablo != null)
+                                parkingTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+        //TÜM BORÇLARI SİL
+        var addDebtpaymentAll = () => {
+
+            var BorcControl = $('[name = "silinecekBorcTutarı"]').val().replace('.', ',');
+            var AciklamaControl = $('[name = "aciklama"]').val();
+
+            var formData = new FormData();
+            formData.append('silinecekBorcTutarı', BorcControl)
+            formData.append('aciklama', AciklamaControl)
+
+            if ($('#olustur').prop('checked')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddDebtpaymentAllArchieve","DebitRecord")',
+                    data: formData,
+                    async: true,
+                    contentType: false,
+                    processData: false,
+                    success: data => {
+                        if (data.Status == true) {
+                            javascript: updateParkingDebt(data.data);
+                        }
+                        else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Deptpayment Ekleme işlemi gerçekleşemedi.'
+                            });
+                        }
+                    },
+                });
+            }
+            else if ($('#islemYapma').prop('checked')) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("AddDebtpaymentAll","DebitRecord")',
+                    data: formData,
+                    async: true,
+                    contentType: false,
+                    processData: false,
+                    success: data => {
+                        if (data.Status == true) {
+                            javascript: updateParkingDebt(data.data);
+                        }
+                        else {
+                            Swal.fire({
+                                icon: 'error',
+                                text: 'Deptpayment Ekleme işlemi gerçekleşemedi.'
+                            });
+                        }
+                    },
+                });
+            }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Borç silme işlemi gerçekleşemedi.'
+                });
+            }
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var updateParkingDebt = (selectId) => {
+
+            var checkedDebts = $('.debts:checkbox');
+            var parkingControlIds = [];
+            for (let debt of checkedDebts) {
+                parkingControlIds.push(debt.id.replace('checked_', ''));
+
+            }
+            var DebtpaymentControl = selectId;
+            var AciklamaControl = $('[name = "aciklama"]').val();
+
+            $.post('@Url.Action("UpdateParkingDebt", "DebitRecord")', { aciklama: AciklamaControl, deptpaymentId: DebtpaymentControl, parkingIds: parkingControlIds }, (d, s) => {
+                if (s === 'success') {
+                    if (d.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Borç silme işlemi başarıyla gerçekleşti.'
+                        })
+
+                        if (parkingTablo != null)
+                            parkingTablo.ajax.reload();
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'ParkingDebt Update işlemi gerçekleşemedi.'
+                        });
+                    }
+                }
+            });
+        }
+
+        var deleteAllParking = () => {
+
+
+            var checkedDebts = $('.debts:checkbox');
+            let parkingControlIds = [];
+            for (let debt of checkedDebts) {
+                parkingControlIds.push(debt.id.replace('checked_', ''));
+
+            }
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+
+                        $.post('@Url.Action("DeleteAllParking","DebitRecord")', { pr: parkingControlIds }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    parkingTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (parkingTablo != null)
+                                parkingTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+        //Seçili Borçları Aktar-Verilerin Çağrıldığı Yer
+        var transferCheck = () => {
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (!PlakaControl) {
+                Swal.fire(
+                    'Araç bulunamadı.'
+                )
+                return;
+            }
+            if (document.querySelectorAll('.debts:checked').length == 0) {
+                Swal.fire(
+                    'Seçili Borç Kaydı Bulunamadı.'
+                )
+                return;
+            }
+
+            $('#staticBackdrop1').modal('show');
+            $('#plaka3').val('BORCU AKTAR - PLAKA :' + PlakaControl);
+
+        }
+
+        //Tüm Borçları Aktar-Verilerin Çağrıldığı Yer
+        var transferCheckAll = () => {
+            var PlakaControl = document.getElementById("licenseplate").value;
+            if (!PlakaControl) {
+                Swal.fire('Araç bulunamadı.')
+                return;
+            }
+
+            if ($('.debts:checkbox').not(this).prop('checked', this.checked).length == 0) {
+                Swal.fire(
+                    'Borç Kaydı Bulunamadı.')
+                return;
+            }
+
+            $('#staticBackdrop1').modal('show');
+            $('#plaka3').val('BORCU AKTAR - PLAKA :' + PlakaControl);
+
+        }
+
+        //Transfer Control
+        var transferControl = () => {
+            if (document.querySelectorAll('.debts:checked').length == 0 || document.querySelectorAll('.debts:checked').length == $('.debts:checkbox').not(this).prop('checked', this.checked).length) {
+                javascript: transferAll();
+            }
+            else {
+                javascript: transferSelect();
+            }
+
+        }
+
+        //SEÇİLİ BORÇLARI AKTAR
+        var transferSelect = () => {
+
+            let selectedDebts = document.querySelectorAll('.debts:checked');
+            let parkingControlIDs = [];
+            for (let debt of selectedDebts) {
+                parkingControlIDs.push(debt.id.replace('checked_', ''));
+            }
+
+            let AktaranControl = document.getElementById("licenseplate").value;
+            let AktarılanControl = document.getElementById("transferPlaka").value;
+            let AktarılanPlakaControl = document.getElementById("opDropdown3").value;
+            let CusControl = document.getElementById("CustomerDropdown2").value;
+
+            Swal.fire({
+                title: 'Aktarmak istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+                    if (result.value == true) {
+                        if (CusControl == -1) {
+                            $.post('@Url.Action("TransferSelect", "DebitRecord")', { aktaranPlaka: AktaranControl, aktarılanPlaka: AktarılanControl, plakaIds: parkingControlIDs }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+
+                                        parkingTablo.ajax.reload();
+                                        Swal.fire({ title: 'Aktarma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'Aktarma işlemi gerçekleşemedi.'
+                                        });
+                                    }
+
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+                        }
+                        else {
+                            $.post('@Url.Action("TransferPlakaSelect", "DebitRecord")', { aktaranPlaka: AktaranControl, aktarılanPlakaId: AktarılanPlakaControl, plakaIds: parkingControlIDs }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+
+                                        parkingTablo.ajax.reload();
+                                        Swal.fire({ title: 'Aktarma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'Aktarma işlemi gerçekleşemedi.'
+                                        });
+                                    }
+
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+                        }
+                    }
+                });
+
+            $('#staticBackdrop1').modal('hide');
+
+
+        }
+
+        //TÜM BORÇLARI AKTAR
+        var transferAll = () => {
+            let allDebts = $('.debts:checkbox');
+            let parkingControls = [];
+            for (let debt of allDebts) {
+                parkingControls.push(debt.id.replace('checked_', ''));
+
+            }
+
+            let AktaranControl = document.getElementById("licenseplate").value;
+            let AktarılanControl = document.getElementById("transferPlaka").value;
+            let AktarılanPlakaControl = document.getElementById("opDropdown3").value;
+            let CusControl = document.getElementById("CustomerDropdown2").value;
+            Swal.fire({
+                title: 'Aktarmak istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+
+                        if (CusControl == -1) {
+                            $.post('@Url.Action("TransferSelect", "DebitRecord")', { aktaranPlaka: AktaranControl, aktarılanPlaka: AktarılanControl, plakaIds: parkingControls }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+
+                                        parkingTablo.ajax.reload();
+                                        Swal.fire({ title: 'Aktarma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'Aktarma işlemi gerçekleşemedi.'
+                                        });
+                                    }
+
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+
+                        }
+                        else {
+                            $.post('@Url.Action("TransferPlakaSelect", "DebitRecord")', { aktaranPlaka: AktaranControl, aktarılanPlakaId: AktarılanPlakaControl, plakaIds: parkingControls }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+
+                                        parkingTablo.ajax.reload();
+                                        Swal.fire({ title: 'Aktarma işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'Aktarma işlemi gerçekleşemedi.'
+                                        });
+                                    }
+
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+
+                        }
+                    }
+                });
+            $('#staticBackdrop1').modal('hide');
+
+        }
+
+        //SEÇİLİ BORÇLARI İCRA DOSYASINA AKTAR
+        var checkLawyer = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (!PlakaControl) {
+                Swal.fire(
+                    'Araç bulunamadı.'
+                )
+                return;
+            }
+            if (document.querySelectorAll('.debts2:checked').length == 0) {
+                Swal.fire(
+                    'Seçili Borç Kaydı Bulunamadı.'
+                )
+                return;
+            }
+
+            //check olan stırların ID'si
+
+            let parkingControlIDs = [];
+            let checkedDebts = document.querySelectorAll('.debts2:checked');
+
+            for (let debt of checkedDebts) {
+                parkingControlIDs.push(debt.id.replace('checked_', ''));
+
+                Swal.fire({
+                    title: 'Seçili Borçları İcra Dosyasına Aktarmak İstediğinize Emin Misiniz?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    cancelButtonText: 'Hayır',
+                    confirmButtonColor: '#4a804d',
+                    cancelButtonColor: '#b22222',
+                    confirmButtonText: 'Evet'
+                })
+                    .then((result) => {
+                        if (result.value == true) {
+                            $.post('@Url.Action("CheckedExecutionDebts","DebitRecord")', { sId: parkingControlIDs, sPlaka: PlakaControl }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+                                        parkingTablo.ajax.reload();
+
+                                        Swal.fire({ title: 'İcra Dosyasına Aktarma İşlemi Gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'İcra Dosyasına Aktarma İşlemi Gerçekleşemedi.'
+                                        });
+                                    }
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+                        }
+                    })
+            }
+        }
+
+        //SEÇİLİ BORÇLARI İCRA DOSYASINDAN ÇIKAR
+        var checkNotLawyer = () => {
+
+            var PlakaControl = document.getElementById("licenseplate").value;
+
+            if (!PlakaControl) {
+                Swal.fire(
+                    'Araç bulunamadı.'
+                )
+                return;
+            }
+            if (document.querySelectorAll('.debts2:checked').length == 0) {
+                Swal.fire(
+                    'Seçili Borç Kaydı Bulunamadı.'
+                )
+                return;
+            }
+
+            //check olan satırların ID'si
+            let parkingControlIDs = [];
+            let checkedDebts = document.querySelectorAll('.debts2:checked');
+            for (let debt of checkedDebts) {
+                parkingControlIDs.push(debt.id.replace('checked_', ''));
+
+                Swal.fire({
+                    title: 'Seçili Borçları İcra Dosyasından Çıkarmak İstediğinize Emin Misiniz?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    cancelButtonText: 'Hayır',
+                    confirmButtonColor: '#4a804d',
+                    cancelButtonColor: '#b22222',
+                    confirmButtonText: 'Evet'
+                })
+                    .then((result) => {
+                        if (result.value == true) {
+                            $.post('@Url.Action("CheckedNotExecutionDebts","DebitRecord")', { sId: parkingControlIDs, sPlaka: PlakaControl }, (d, s) => {
+                                if (s === "success") {
+
+                                    if (d.Status == true) {
+                                        parkingTablo.ajax.reload();
+                                        Swal.fire({ title: 'İcra Dosyasından Çıkarma İşlemi Gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'İcra Dosyasından Çıkarma İşlemi Gerçekleşemedi.'
+                                        });
+                                    }
+                                }
+                                if (parkingTablo != null)
+                                    parkingTablo.ajax.reload();
+                            });
+                        }
+                    })
+            }
+        }
+
+        //Tabpanel-SORGULA DROPDOWN
+        var getDropdown2 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown2", "Customers")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Abone Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].cusId + '">' + data.data[i].adsoyad + '</option>';
+                        }
+
+                        $("#CustomerDropdown2").html(s);
+
+
+                        $('#CustomerDropdown2').on('change', function () {
+                            javascript: getDropdown3();
+                        });
+
+                    }
+
+                });
+            });
+        }
+
+        var getDropdown3 = () => {
+
+            let selectId = $('#CustomerDropdown2').val();
+
+            $(document).ready(function () {
+                $.getJSON('@Url.Action("Dropdown3", "DebitRecord")', { pr: selectId }, (d, s) => {
+                    if (s == "success") {
+                        if (d.Status == true) {
+
+                            var s = '<option value="-1">Lütfen Araç Seçiniz...</option>';
+                            for (var i = 0; i < d.data.length; i++) {
+
+                                s += '<option value="' + d.data[i].cusId + '">' + d.data[i].adsoyad + '</option>';
+                            }
+                            $("#opDropdown3").html(s);
+                        }
+                    }
+                })
+
+            });
+        }
+
+        //Tabpanel-EKLE DROPDOWN
+        var ekle_getDropdown2 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown2", "Customers")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Abone Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].cusId + '">' + data.data[i].adsoyad + '</option>';
+                        }
+
+                        $("#ekle_CustomerDropdown2").html(s);
+
+
+                        $('#ekle_CustomerDropdown2').on('change', function () {
+                            javascript: ekle_getDropdown3();
+                        });
+
+                    }
+
+                });
+            });
+        }
+
+        var ekle_getDropdown3 = () => {
+
+            let selectId = $('#ekle_CustomerDropdown2').val();
+
+            $(document).ready(function () {
+                $.getJSON('@Url.Action("Dropdown3", "DebitRecord")', { pr: selectId }, (d, s) => {
+                    if (s == "success") {
+                        if (d.Status == true) {
+
+                            var s = '<option value="-1">Lütfen Araç Seçiniz...</option>';
+                            for (var i = 0; i < d.data.length; i++) {
+
+                                s += '<option value="' + d.data[i].cusId + '">' + d.data[i].adsoyad + '</option>';
+                            }
+                            $("#ekle_opDropdown3").html(s);
+                        }
+                    }
+                })
+
+            });
+        }
+
+        var ekle_getDropdown1 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown3", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Kullanıcı Adı Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].kullaniciAdi + '</option>';
+                        }
+                        $("#ekle_userDropdown1").html(s);
+                    }
+                });
+            });
+        }
+
+        //BORÇ EKLE
+        var addDebt = () => {
+
+            let DateControl = document.getElementById("ekle_date").value;
+            let UserControl = document.getElementById("ekle_userDropdown1").value;
+            let PlakaControl = document.getElementById("ekle_plaka1").value;
+            let UcretControl = document.getElementById("ekle_ucret").value;
+
+            let KayıtControl = document.getElementById('ekle_CustomerDropdown2').value;
+            let KPlakaControl = document.getElementById('ekle_opDropdown3').value;
+
+            $.getJSON('@Url.Action("JobRotationControl", "DebitRecord")', { userId: UserControl, date: DateControl }, (d, s) => {
+                if (s == 'success') {
+                    if (d.Status == true) {
+                        Swal.fire({
+                            title: 'Borç Eklemek istediğinize emin misiniz?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            cancelButtonText: 'Hayır',
+                            confirmButtonColor: '#4a804d',
+                            cancelButtonColor: '#b22222',
+                            confirmButtonText: 'Evet'
+                        })
+                            .then((result) => {
+                                if (result.value == true) {
+                                    if (KayıtControl != -1) {
+                                        if (KPlakaControl != -1) {
+                                            console.log("kayıtlı");
+                                            $.post('@Url.Action("KAddDebts", "DebitRecord")', { date: DateControl, plakaId: KPlakaControl, ucret: UcretControl, jobId: d.data }, (d, s) => {
+                                                if (s === "success") {
+                                                    if (d.Status == true) {
+                                                        Swal.fire({ title: 'Borç Ekleme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                                    }
+                                                    else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            text: 'Borç Ekleme işlemi gerçekleşemedi.'
+                                                        });
+                                                    }
+                                                }
+                                            });
+                                        }
+                                        else {
+                                            Swal.fire({
+                                                icon: 'error',
+                                                text: 'Lütfen Araç Seçiniz!'
+                                            });
+                                        }
+                                    }
+                                    else {
+                                        console.log("kayıtsız");
+                                        $.post('@Url.Action("AddDebts", "DebitRecord")', { date: DateControl, plaka: PlakaControl, ucret: UcretControl, jobId: d.data }, (d, s) => {
+                                            if (s === "success") {
+
+                                                if (d.Status == true) {
+
+                                                    Swal.fire({ title: 'Borç Ekleme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                                }
+                                                else {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        text: 'Borç Ekleme işlemi gerçekleşemedi.'
+                                                    });
+                                                }
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Kullanıcının seçilen tarihte vardiyası bulunmamaktadır.'
+                        });
+                    }
+                }
+
+            })
+        }
+
+        var showParkRecord = () => {
+
+            var PlakaControl = document.getElementById("ekle_plaka2").value;
+            var TarihControl = document.getElementById("ekle_date1").value;
+
+            if (parkRecordTablo != null) {
+                parkRecordTablo.destroy();
+                parkRecordTablo = null;
+            }
+
+            if (parkRecordTablo == null) {
+                parkRecordTablo = $('#parkRecord_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowParkRecord", "DebitRecord")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.licenseplate = PlakaControl;
+                            d.date = TarihControl;
+
+                        }
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        { "render": (data, type, row) => { return row.parkingDebtId; }, "name": "parkingDebtId" },
+                        { "render": (data, type, row) => { return row.licenseplate; }, "name": "licenseplate" },
+                        { "render": (data, type, row) => { return row.locId; }, "name": "locId" },
+                        { "render": (data, type, row) => { return row.rowId; }, "name": "rowId" },
+                        { "render": (data, type, row) => { return row.startdate; }, "name": "startdate" },
+                        { "render": (data, type, row) => { return row.enddate; }, "name": "enddate" },
+                        { "render": (data, type, row) => { return row.parkingdurationforovertime; }, "name": "parkingdurationforovertime" },
+                        { "render": (data, type, row) => { return parseFloat(row.parkingfeeforovertime).toFixed(2); }, "name": "parkingfeeforovertime" },
+                        { "render": (data, type, row) => { return parseFloat(row.paidfeeforovertime).toFixed(2); }, "name": "paidfeeforovertime" },
+                        { "render": (data, type, row) => { return `<button class="btn btn btn-outline-dark pt-2" onclick="javascript:addDebtRecord(${row.parkingDebtId})"><i data-feather = "dollar-sign"></i></button>` }, "name": "parkingDebtId" },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#parkRecord_table_filter input').unbind();
+                        $('#parkRecord_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                parkRecordTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+
+            } else parkRecordTablo.ajax.reload();
+
+
+        }
+
+        var addDebtRecord = (selectId) => {
+            Swal.fire({
+                title: 'Borç Kaydına Dönüştürmek İstediğinize Emin Misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+                    if (result.value == true) {
+                        $.post('@Url.Action("AddDebtRecord","DebitRecord")', { sId: selectId }, (d, s) => {
+                            if (s === "success") {
+                                if (d.Status == true) {
+
+                                    parkRecordTablo.ajax.reload();
+                                    Swal.fire({ title: 'Borç Kaydına Dönüştürme İşlemi Gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Borç Kaydına Dönüştürme İşlemi Gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (parkRecordTablo != null)
+                                parkRecordTablo.ajax.reload();
+                        });
+                    }
+                })
+        }
+
+        //SİLİNEN BORÇLAR
+        var showDeletedDebts = () => {
+            var PlakaControl = document.getElementById("silinen_plaka1").value;
+            var STarihiControl = document.getElementById("silinen_date1").value;
+            var ETarihiControl = document.getElementById("silinen_date2").value;
+            console.log(STarihiControl);
+
+            if (deletedDebtsTablo != null) {
+                deletedDebtsTablo.destroy();
+                deletedDebtsTablo = null;
+            }
+
+            if (deletedDebtsTablo == null) {
+
+                deletedDebtsTablo = $('#deletedParkRecords_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowDeletedDebts", "DebitRecord")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.plaka = PlakaControl;
+                            d.startdate = STarihiControl;
+                            d.enddate = ETarihiControl;
+                            console.log(STarihiControl);
+                        }
+
+                    },
+                    createdRow: function (row, data, dataIndex) {
+                    },
+                    columnDefs: [],
+                    columns: [
+                        { "render": (data, type, row) => { return `<div class="form-check form-check-inline" ><input class="form-check-input deletedDebts" id="${row.parkingId}"  type="checkbox"></div>`; }, "name": "parkingId" },
+                        { "render": (data, type, row) => { return row.licenseplate; }, "name": "licenseplate" },
+                        { "render": (data, type, row) => { return row.rowId; }, "name": "rowId" },
+                        { "render": (data, type, row) => { return row.locId; }, "name": "locId" },
+                        { "render": (data, type, row) => { return row.startdate; }, "name": "startdate" },
+                        { "render": (data, type, row) => { return row.enddate; }, "name": "enddate" },
+                        { "render": (data, type, row) => { return row.parkingdurationforovertime; }, "name": "parkingdurationforovertime" },
+                        { "render": (data, type, row) => { if (row.parkingfeeforovertime == null) return parseFloat(row.parkingfeeforovertime).toFixed(2); else return '₺ ' + parseFloat(row.parkingfeeforovertime).toFixed(2); }, "name": "parkingfeeforovertime" },
+                    ],
+                    dom: 'Bfrtip',
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            className: 'btn blue',
+                            text: '<i class="far fa-copy"></i> Kopyala',
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn green',
+                            text: '<i class="far fa-file-excel"></i> Excel',
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn red',
+                            text: '<i class="far fa-file-pdf"></i> PDF'
+                        },
+                        //{
+                        //    text: 'Reload',
+                        //    action: function (e, dt, node, config) {
+                        //        dt.ajax.reload();
+                        //    }
+                        //}
+
+                    ],
+                    initComplete: function (settings, json) {
+                        $('#deletePark_table_filter input').unbind();
+                        $('#deletePark_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                deletedDebtsTablo.search(this.value).draw();
+                            }
+                        });
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+                    }
+                })
+            } else deletedDebtsTablo.ajax.reload();
+        }
+
+        //Seçili Borçları Geri Yükle
+        var transferDeletedDebts = () => {
+
+            var deletedDebts = document.querySelectorAll('.deletedDebts:checked');
+            var parkingControl = [];
+            for (let debt of deletedDebts) {
+                parkingControl.push(debt.id.replace('checked_', ''));
+
+            }
+            if (parkingControl.length == 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    text: 'Lütfen Kayıt Seçiniz!'
+                });
+            }
+            else {
+                Swal.fire({
+                    title: 'Borç Kayıtlarını Geri Yüklemek İstediğinize Emin Misiniz?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    cancelButtonText: 'Hayır',
+                    confirmButtonColor: '#4a804d',
+                    cancelButtonColor: '#b22222',
+                    confirmButtonText: 'Evet'
+                })
+                    .then((result) => {
+                        if (result.value == true) {
+                            $.post('@Url.Action("TransferDeletedDebts","DebitRecord")', { parkingId: parkingControl }, (d, s) => {
+
+                                if (s === "success") {
+                                    if (d.Status == true) {
+
+                                        deletedDebtsTablo.ajax.reload();
+                                        Swal.fire({ title: 'Borç Kayıtlarını Geri Yükleme İşlemi Gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                    }
+                                    else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            text: 'Borç Kayıtlarını Geri Yükleme İşlemi Gerçekleşemedi.'
+                                        });
+                                    }
+
+                                }
+                                if (deletedDebtsTablo != null)
+                                    deletedDebtsTablo.ajax.reload();
+                            });
+                        }
+                    })
+            }
+
+        }
+
+        //Tüm Borçları Geri Yükle
+        var allTransferDeletedDebts = () => {
+            let allDebts = $('.deletedDebts:checkbox');
+            let parkingControls = [];
+            for (let debt of allDebts) {
+                parkingControls.push(debt.id.replace('checked_', ''));
+
+            }
+
+            Swal.fire({
+                title: 'Tüm Borçları geri yüklemek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+
+                        $.post('@Url.Action("TransferDeletedDebts", "DebitRecord")', { parkingId: parkingControls }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    deletedDebtsTablo.ajax.reload();
+                                    Swal.fire({ title: 'Tüm borçları geri yükleme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Tüm borçları geri yükleme işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (deletedDebtsTablo != null)
+                                deletedDebtsTablo.ajax.reload();
+                        });
+
+                    }
+                });
+        }
+
+    </script>
+    }

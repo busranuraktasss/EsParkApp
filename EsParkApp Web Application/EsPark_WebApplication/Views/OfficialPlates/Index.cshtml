@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Resmi Gruplar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+    <div class="px-5 py-5">
+    <div class="px-5 py-5">m
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header  ">
+                    <h3 class="page-title pt-1 text-start">Gruplar</h3>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="resmigruplar_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Plaka</th>
+                                <th>Grup</th>
+                                <th>Bitiş Tarihi</th>
+                                <th>Ücret</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end OfficialPlate Table-->
+
+@section scripts {
+    <script type="text/javascript">
+
+        var officialPlatesTablo = null;
+
+        $((_$) => {
+            getOfficialPlatesAjax();
+        });
+
+        var getOfficialPlatesAjax = () => {
+            if (officialPlatesTablo == null)
+                officialPlatesTablo = $('#resmigruplar_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowOfficialPlates", "OfficialPlates")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.pId;
+                            }, "name": "pId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.grup;
+                            }, "name": "grup"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.finishdate;
+                            }, "name": "finishdate"
+                        },
+                        { "render": (data, type, row) => { if (row.fee == null) return row.fee; else return '₺ ' + row.fee;}, "name": "fee" },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#officialplates_table_filter input').unbind();
+                        $('#officialplates_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                officialPlatesTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+
+    </script>
+}

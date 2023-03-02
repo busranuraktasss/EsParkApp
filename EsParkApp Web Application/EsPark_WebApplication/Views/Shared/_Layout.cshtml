@@ -1,0 +1,379 @@
+﻿<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Type" content="text/htmls; charset=utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-9" />
+    <meta http-equiv="content-type" content="text/html; charset=windows-1254" />
+    <meta http-equiv="content-type" content="text/html; charset=x-mac-turkish" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Language" content="TR" />
+    <title>EsPark_App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+    <meta content="" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- App favicon -->
+
+    <!-- jvectormap -->
+    <link href="~/plugins/jvectormap/jquery-jvectormap-2.0.2.css" rel="stylesheet">
+
+    <!-- App css -->
+
+    <link rel="stylesheet" type="text/css" href="~/assets/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/icons.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/metisMenu.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/app.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/buttons.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/responsive.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/sweet-alert2/sweetalert2.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/assets/css/app.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Select2/css/select2.css"/>
+
+
+    @RenderSection("css", required:false);
+</head>
+
+<body data-layout="horizontal" class="">
+
+    <!-- Top Bar Start -->
+    <div class="topbar">
+        <!-- LOGO -->
+        <div class="brand">
+            <a href=@Url.Action("Index", "Home")>
+                <span>
+                    <img src="~/assets/images/espark.png" style="height:121">
+                </span>
+
+            </a>
+        </div>
+
+        <!--end logo-->
+        <div class="pt-2 card-body">
+            <div class="row col-12">
+                <ul class="nav nav-tabs " role="tablist">
+                    <li class="nav-item ">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#anamenu" role="tab" aria-selected="true">ES PARK PRO ANA MENÜ</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" data-bs-toggle="tab" href="#otopark" role="tab" aria-selected="false">KAPALI VE AÇIK OTOPARKLAR</a>
+                    </li>
+                </ul>
+            </div>
+            <!-- Nav tabs -->
+            <!-- Tab panes -->
+            <div class="pt-2 tab-content">
+                <div class="tab-pane active" id="anamenu" role="tabpanel">
+                    <!-- Navbar -->
+                    <nav class="navbar-custom">
+                        <div class="navbar-custom-menu">
+                            <div id="navigation">
+                                <!-- Navigation Menu-->
+
+                                <ul class="navigation-menu">
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="grid" class="align-self-center hori-menu-icon"></i>TANIMLAMALAR</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "Users") class="menu-link ">
+                                                    <i data-feather="users" class="align-self-center hori-menu-icon"></i>Kullanıcılar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "Devices") class="menu-link">
+                                                    <i data-feather="sidebar" class="align-self-center hori-menu-icon"></i>Cihazlar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "Locations") class="menu-link">
+                                                    <i data-feather="map-pin" class="align-self-center hori-menu-icon"></i>Lokasyonlar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "ParkTariffs") class="menu-link">
+                                                    <i data-feather="dollar-sign" class="align-self-center hori-menu-icon"></i>Tarifeler
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "OfficialPlates") class="menu-link">
+                                                    <i data-feather="award" class="align-self-center hori-menu-icon"></i>Resmi Gruplar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "Customers") class="menu-link">
+                                                    <i data-feather="users" class="align-self-center hori-menu-icon"></i>Aboneler
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="trello" class="align-self-center hori-menu-icon"></i>İŞLEMLER</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "Assignments") class="menu-link">
+                                                    <i data-feather="edit" class="align-self-center hori-menu-icon"></i>Atamalar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "LocTariffAssignments") class="menu-link">
+                                                    <i data-feather="map-pin" class="align-self-center hori-menu-icon"></i>Lokasyon Tarifeleri
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "CustomerCollection") class="menu-link">
+                                                    <i data-feather="dollar-sign" class="align-self-center hori-menu-icon"></i>Abone Tahsilat
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="bell" class="align-self-center hori-menu-icon"></i>Bildirimler
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "DebitRecord") class="menu-link">
+                                                    <i data-feather="trending-down" class="align-self-center hori-menu-icon"></i>Borç İşlemleri
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "ZReport") class="menu-link">
+                                                    <i data-feather="smartphone" class="align-self-center hori-menu-icon"></i>Açık Kalan Vardiyalar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "Parkings") class="menu-link">
+                                                    <i data-feather="globe" class="align-self-center hori-menu-icon"></i>Online Araç Çıkışı
+                                                </a>
+                                            </li>
+
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="layers" class="align-self-center hori-menu-icon"></i>RAPORLAR</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "EArchieve") class="menu-link">
+                                                    <i data-feather="archive" class="align-self-center hori-menu-icon"></i>E-Arşiv Kontrol
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "BusinessReport") class="menu-link">
+                                                    <i data-feather="pie-chart" class="align-self-center hori-menu-icon"></i>İşletme Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "DebtCollectionReport") class="menu-link">
+                                                    <i data-feather="inbox" class="align-self-center hori-menu-icon"></i>Borç Tahsilat Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "AdvancedReport") class="menu-link">
+                                                    <i data-feather="columns" class="align-self-center hori-menu-icon"></i>Gelişmiş Rapor
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="clipboard" class="align-self-center hori-menu-icon"></i>Performans Raporu
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="sliders" class="align-self-center hori-menu-icon"></i>AYARLAR</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="settings" class="align-self-center hori-menu-icon"></i>Sistem Ayarları
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                </ul><!-- End navigation menu -->
+                            </div> <!-- end navigation -->
+                        </div>
+                        <!-- Navbar -->
+                    </nav>
+                    <!-- end navbar-->
+                </div>
+                <div class="tab-pane" id="otopark" role="tabpanel">
+                    <!-- Navbar -->
+                    <nav class="navbar-custom">
+                        <div class="navbar-custom-menu">
+                            <div id="navigation">
+                                <!-- Navigation Menu-->
+                                <ul class="navigation-menu">
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="grid" class="align-self-center hori-menu-icon"></i>GENEL TANIMLAMALAR
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="target" class="align-self-center hori-menu-icon"></i>Otoparklar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "s") class="menu-link">
+                                                    <i data-feather="users" class="align-self-center hori-menu-icon"></i>Kullanıcılar
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="dollar-sign" class="align-self-center hori-menu-icon"></i>Tarifeler
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="trello" class="align-self-center hori-menu-icon"></i>İŞLEMLER</span>
+                                        </a>
+                                        <ul class="submenu">
+
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="edit" class="align-self-center hori-menu-icon"></i>Plaka Değiştir
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="x-circle" class="align-self-center hori-menu-icon"></i>Araç Çıkışı
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="clipboard" class="align-self-center hori-menu-icon"></i>Aktif Liste
+                                                </a>
+                                            </li>
+
+
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="sliders" class="align-self-center hori-menu-icon"></i>ABONE İŞLEMLERİ</span>
+                                        </a>
+                                        <ul class="submenu">
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="users" class="align-self-center hori-menu-icon"></i>Genel Abone İşlemleri
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="bar-chart-2" class="align-self-center hori-menu-icon"></i>Abone Hareketleri
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                    <li class="has-submenu">
+                                        <a href="#">
+                                            <span><i data-feather="layers" class="align-self-center hori-menu-icon"></i>RAPORLAR</span>
+                                        </a>
+                                        <ul class="submenu">
+
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="pie-chart" class="align-self-center hori-menu-icon"></i>İşletme Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="archive" class="align-self-center hori-menu-icon"></i>Genel Hareket Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="columns" class="align-self-center hori-menu-icon"></i>Gelişmiş Rapor
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="inbox" class="align-self-center hori-menu-icon"></i>Borç Tahsilat Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="clipboard" class="align-self-center hori-menu-icon"></i>Vardiya Raporu
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href=@Url.Action("Index", "") class="menu-link">
+                                                    <i data-feather="percent" class="align-self-center hori-menu-icon"></i>Doluluk Oranı
+                                                </a>
+                                            </li>
+                                        </ul><!--end submenu-->
+                                    </li><!--end has-submenu-->
+
+                                </ul><!-- End navigation menu -->
+                            </div> <!-- end navigation -->
+                        </div>
+                        <!-- Navbar -->
+                    </nav>
+                    <!-- end navbar-->
+                </div>
+            </div>
+        </div><!--end card-body-->
+    </div>
+    <div>
+        <main role="main" class="">
+            @RenderBody()
+        </main>
+    </div>
+
+    <!-- jQuery  -->
+
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/metismenu.min.js"></script>
+    <script src="~/assets/js/waves.js"></script>
+    <script src="~/assets/js/feather.min.js"></script>
+    <script src="~/assets/js/simplebar.min.js"></script>
+    <script src="~/assets/js/moment.js"></script>
+    <script src="~/plugins/daterangepicker/daterangepicker.js"></script>
+    <script src="~/assets/pages/jquery.sweet-alert.init.js"></script>
+    <script src="~/plugins/sweet-alert2/sweetalert2.min.js"></script>
+    <script src="~/assets/pages/jquery.sweet-alert.init.js"></script>
+    <script src="~/Select2/js/select2.js"></script>
+
+
+    @*<script src="~/plugins/apex-charts/apexcharts.min.js"></script>*@
+    <script src="~/plugins/jvectormap/jquery-jvectormap-2.0.2.min.js"></script>
+    <script src="~/plugins/jvectormap/jquery-jvectormap-us-aea-en.js"></script>
+
+
+    <script src="~/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/plugins/datatables/dataTables.bootstrap5.min.js"></script>
+    <script src="~/plugins/datatables/dataTables.responsive.min.js"></script>
+
+    <!-- App js -->
+    <script src="~/assets/js/app.js"></script>
+
+
+    <footer class="footer text-center text-sm-start">
+        &copy; <script>
+                   document.write(new Date().getFullYear())
+        </script><span class="text-muted d-none d-sm-inline-block float-end">
+            ESPARK <i class="mdi mdi-heart text-danger"></i>
+        </span>
+    </footer><!--end footer-->
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

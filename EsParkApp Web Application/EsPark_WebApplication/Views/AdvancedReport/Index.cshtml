@@ -1,0 +1,398 @@
+﻿@{
+    ViewData["Title"] = "Gelişmiş Rapor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section css{
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/buttons.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/responsive.bootstrap4.min.css" />
+}
+
+    <div class="px-5 py-5">
+        <div class="px-5 py-5">
+            <div class="px-5 py-5 card-body">
+                <div class="card">
+                    <div class="card-header  ">
+                        <h3 class="page-title pt-1 text-start">GELİŞMİŞ RAPOR KRİTERİ</h3>
+                    </div>
+                </div>
+                <div class="card pt-3">
+                    <div class="card" style="width:500px; margin:auto">
+                        <div class="card-header" style="height:45px; background-color:#ffb822">
+                            <h6 class="my-1" style="color:white">Tarih Aralığı</h6>
+                        </div>
+                        <div class=" align-self-center px-4 pt-4" style="width:430px">
+                            <label class=" form-label text-start" for="date1"><b>BAŞLANGIÇ TARİHİ</b></label>
+                            <div class="col-sm-10 mx-2 ">
+                                <input class="form-control" type="date" value="date" id="date1" name="date1">
+                            </div>
+                        </div>
+                        <div class=" align-self-center px-4 pt-4 my-3" style="width:430px">
+                            <label class="form-label text-start" for="date2"><b>BİTİŞ TARİHİ</b></label>
+                            <div class="col-sm-10 mx-2 my-2">
+                                <input class="form-control" type="date" value="date" id="date2" name="date2">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin:auto;">
+                        <div class="align-self-sm-center mx-lg-5 pt-4" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-4" for="Dropdown1"><b>LOKASYON BELİRT</b></label>
+                            <select class="col-md-6 dropdown-control" id="locDropdown1" name="LocId"></select>
+                        </div>
+                        <div class="align-self-sm-center mx-lg-5 pt-3" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-4" for="Dropdown2"><b>KULLANICI BELİRT</b></label>
+                            <select class="col-md-6 dropdown-control" id="userDropdown2" name="PıdId"></select>
+                        </div>
+                        <div class="align-self-sm-center mx-lg-5 pt-3" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-4" for="Dropdown3"><b>CİHAZ BELİRT</b></label>
+                            <select class="col-md-6 dropdown-control" id="deviceDropdown2" name="DeviceId"></select>
+                        </div>
+                        <div class="align-self-sm-center mx-lg-5 row" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-3 my-2 pt-3" for="ekle_Dropdown1"><b>ARAÇ PLAKASI</b></label>
+                            <div class="col-sm-6 mx-2 pt-2 my-2">
+                                <input class="form-control " typeof="number" id="plaka" name="plaka" />
+                            </div>
+                        </div>
+                        <div class="align-self-sm-center mx-lg-5 pt-3" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-4" for="Dropdown4"><b>BEDAVA ARAÇ BELİRT</b></label>
+                            <select class="col-md-6 dropdown-control" id="plateDropdown4" name="plateId"></select>
+                        </div>
+                        <div class="checkbox checkbox-warning pt-3" style="width:500px">
+                            <input class="col-sm-2" id="checkbox" type="checkbox">
+                            <label class="col-md-6" for="checkbox">SADECE BORÇ KAYITLAR</label>
+                        </div>
+                    </div>
+                    <div class="pt-2 my-3" style="width:200px; margin:auto">
+                        <button class="btn btn-outline-warning mx-3 text-center" style="align-self:center; width:150px; height:80px" onclick="javascript:getAdvanceReport();">GÖRÜNTÜLE</button>
+                    </div>
+                </div>
+                <div class="container-fluid mt-5">
+                    <div class="row mt-5">
+                        <div class="card">
+                            <div class="table-responsive p-2">
+                                <table id="advanceReport_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>KULLANICI</th>
+                                            <th>LOKASYON</th>
+                                            <th>CİHAZ</th>
+                                            <th>PLAKA</th>
+                                            <th>PARKLANMA BAŞLANGICI</th>
+                                            <th>GİRİŞ SÜRESİ (dk)</th>
+                                            <th>GİRİŞTE ALINAN ÜCRET</th>
+                                            <th>GEÇEN SÜRE (dk)</th>
+                                            <th>OLUŞAN ÜCRET</th>
+                                            <th>TAHSİL EDİLEN ÜCRET</th>
+                                            <th>PARKLANMA BİTİŞİ</th>
+                                            <th>BORÇ</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+                                            <th colspan="3">
+                                                Giriş Ücreti Toplamı:   ₺<b id="sum1"></b><br />
+                                                Girişte Alınan Ücret Toplmaı:   ₺<b id="sum2"></b><br />
+                                                Aşılmış Zaman Sonucu Ücret Toplmaı: ₺<b id="sum3"></b><br />
+                                                Aşılmış Zaman Sonucu Ücreti Tahsilat Toplamı:   ₺<b id="sum4"></b><br />
+                                            </th>
+                                            <th colspan="4">
+                                                Genel Ücret Toplamı:   ₺<b id="sum5"></b><br />
+                                                Girişte Tahsil Edilen Ücret Toplmaı:   ₺<b id="sum6"></b><br />
+                                                Tahsil Edilemeyen Ücret Toplmaı: ₺<b id="sum7"></b><br />
+                                            </th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts {
+
+    <script type="text/javascript" src="~/plugins/datatables/jszip.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/vfs_fonts.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.html5.min.js"></script>
+
+    <script type="text/javascript">
+        var advanceTable = null;
+
+        $((_$) => {
+
+            Dropdown1();
+            Dropdown2();
+            Dropdown3();
+            Dropdown4();
+            getDate();
+
+        });
+
+        var getDate = () => {
+            var today = new Date();
+
+            document.getElementById("date1").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+            document.getElementById("date2").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+
+        }
+
+        var getAdvanceReport = () => {
+
+            if (advanceTable != null) {
+                advanceTable.destroy();
+                advanceTable = null;
+            }
+
+            var date1Control = document.getElementById("date1").value;
+            var date2Control = document.getElementById("date2").value;
+            var locControl = document.getElementById("locDropdown1").value;
+            var userControl = document.getElementById("userDropdown2").value;
+            var deviceControl = document.getElementById("deviceDropdown2").value;
+            var plateControl = document.getElementById("plaka").value;
+            var freePlateControl = document.getElementById("plateDropdown4").value;
+            var checkControl = 0;
+            if (checkControl = document.getElementById('checkbox').checked == true) {
+                checkControl = 1;
+            }
+
+
+
+            if (advanceTable == null) {
+                advanceTable = $('#advanceReport_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: false,
+                    filter: true,
+                    orderMulti: true,
+                    scrollX: true,
+                    order: [[0, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("GetAdvanceReport", "AdvancedReport")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.date1 = date1Control;
+                            d.date2 = date2Control;
+                            d.locId = locControl;
+                            d.rowId = userControl;
+                            d.deviceId = deviceControl;
+                            d.plate = plateControl;
+                            d.freePlateId = freePlateControl;
+                            d.check = checkControl;
+                        }
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        { "render": (data, type, row) => { return row.username; }, "name": "username" },
+                        { "render": (data, type, row) => { return row.locname; }, "name": "locname" },
+                        { "render": (data, type, row) => { return row.device; }, "name": "device" },
+                        { "render": (data, type, row) => { return row.plaka; }, "name": "plaka" },
+                        { "render": (data, type, row) => { return row.startdate; }, "name": "startdate" },
+                        { "render": (data, type, row) => { return row.parking_duration; }, "name": "parking_duration" },
+                        { "render": (data, type, row) => { return '₺ ' + row.parking_fee; }, "name": "parking_fee" },
+                        { "render": (data, type, row) => { return row.parking_duration_forovertime; }, "name": "parking_duration_forovertime" },
+                        { "render": (data, type, row) => { if (row.parking_fee_forovertime == null) return row.parking_fee_forovertime; else return '₺ ' + row.parking_fee_forovertime; }, "name": "parking_fee_forovertime" },
+                        { "render": (data, type, row) => { if (row.paid_fee_forovertime == null) return row.paid_fee_forovertime; else return '₺ ' + row.paid_fee_forovertime; }, "name": "paid_fee_forovertime" },
+                        { "render": (data, type, row) => { return row.outdate; }, "name": "outdate" },
+                        { "render": (data, type, row) => { return row.indebted; }, "name": "indebted" },
+
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    dom: 'Bfrtip',
+                    buttons: [
+                        {
+                            extend: 'copy',
+                            className: 'btn blue',
+                            text: '<i class="far fa-copy"></i> Kopyala',
+                            footer: true,
+                            orientation: 'landscape',
+                            alignment: "center",
+                            exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                            customize: function (doc) {
+                                doc.styles.tableHeader.alignment = 'left';
+                                doc.content[1].table.widths = [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57];
+                            }
+                        },
+                        {
+                            extend: 'excel',
+                            className: 'btn green',
+                            text: '<i class="far fa-file-excel"></i> Excel',
+                            footer: true,
+                            orientation: 'landscape',
+                            alignment: "center",
+                            exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                            customize: function (doc) {
+                                doc.styles.tableHeader.alignment = 'left';
+                                doc.content[1].table.widths = [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57];
+                            }
+                        },
+                        {
+                            extend: 'pdf',
+                            className: 'btn red',
+                            text: '<i class="far fa-file-pdf"></i> PDF',
+                            footer: true,
+                            orientation: 'landscape',
+                            alignment: "center",
+                            exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                            customize: function (doc) {
+                                doc.styles.tableHeader.alignment = 'left';
+                                doc.content[1].table.widths = [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57];
+                            }
+                        },
+
+                    ],
+                    footerCallback: function (row, data, start, end, display) {
+
+                        let sum = 0;
+                        data.forEach(element => {
+                            sum += element.parking_fee;
+                        })
+
+                        let sum1 = 0;
+                        data.forEach(element => {
+                            sum1 += element.parking_fee_forovertime;
+                        })
+
+                        let sum2 = 0;
+                        data.forEach(element => {
+                            sum2 += element.paid_fee_forovertime;
+                        })
+
+                        var Sum = parseFloat(sum).toFixed(2);
+                        var Sum1 = parseFloat(sum1).toFixed(2);
+                        var Sum2 = parseFloat(sum2).toFixed(2);
+                        var Sum3 = parseFloat(Sum + Sum1).toFixed(2);
+                        var Sum4 = parseFloat(Sum + Sum2).toFixed(2);
+                        var Sum5 = parseFloat(Sum1 - Sum2).toFixed(2);
+                        $('#sum1').html(Sum);
+                        $('#sum2').html(Sum);
+                        $('#sum3').html(Sum1);
+                        $('#sum4').html(Sum2);
+                        $('#sum5').html(Sum3);
+                        $('#sum6').html(Sum4);
+                        $('#sum7').html(Sum5);
+                    },
+
+                    initComplete: function (settings, json) {
+                        $('#parking_table_filter input').unbind();
+                        $('#parking_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                advanceTable.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+                    }
+                })
+            }
+
+            advanceTable.ajax.reload();
+        }
+
+
+
+
+        var Dropdown1 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown1", "LocTariffAssignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Lokasyon Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].LocTariffAssignId + '">' + data.data[i].LocId + '</option>';
+                        }
+                        $("#locDropdown1").html(s);
+                    }
+                });
+            });
+        }
+
+        var Dropdown2 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown3", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Kullanıcı Adı Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].kullaniciAdi + '</option>';
+                        }
+                        $("#userDropdown2").html(s);
+                    }
+                });
+            });
+        }
+
+        var Dropdown3 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown2", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Cihaz Seri No Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].cihazNo + '</option>';
+                        }
+                        $("#deviceDropdown2").html(s);
+                    }
+                });
+            });
+        }
+
+        var Dropdown4 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown3", "Customers")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Araç Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].cusId + '">' + data.data[i].adsoyad + '</option>';
+                        }
+                        $("#plateDropdown4").html(s);
+                    }
+                });
+            });
+        }
+
+    </script>
+    }

@@ -1,0 +1,1242 @@
+﻿@{
+    ViewData["Title"] = "Aboneler";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 pt-5">
+    <div class="px-5 pt-5">
+        <div class="px-5 pt-5 col-12 ">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row text-center">
+                        <h3 class="page-title col-sm-10 text-start">Abone Listesi</h3>
+                        <button type="button" class="btn btn btn-outline-dark col-sm-2" style="font-size:15px;" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Abone Ekle</button>
+                    </div>
+                </div>
+                <div class="card-header">
+                    <div class="row text-center">
+                        <p class="col-sm-5"></p>
+                        <label for="example-text-input" style=" font-size:15px; color:black;" class="col-sm-2 pt-2 form-label align-self-center text-end">Araç Plaka Sorgula</label>
+                        <div class="col-sm-2 pt-1">
+                            <input class="form-control" type="text" id="aracSorgula" name="aracSorgula">
+                        </div>
+                        <div class="col-sm-1">
+                            <button type="button" class="btn btn btn-outline-dark" style="height:40px; width:100%; font-size:15px;" onclick="javascript:showOPlates(0);">Sorgula</button>
+
+                        </div>
+                        <button type="button" class="btn btn btn-outline-warning col-sm-2" style="height:40px; font-size:15px;" onclick="javascript:getCustomersAjax();">Tüm Verileri Göster</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="customer_table" class="table table-striped table-bordered dt-responsive nowrap table-hover" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Adı Soyadı / Ünvanı</th>
+                                <th>Telefon No</th>
+                                <th>E-Posta Adresi</th>
+                                <th>Vergi Dairesi</th>
+                                <th>TC Kimlik No / Vergi No</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end Customers Table-->
+
+<div class="px-5">
+    <div class="px-5">
+        <div class="px-5 row">
+            <div class="col-6 ">
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header  ">
+                            <div class="row text-center">
+                                <h3 class="page-title col-sm-9 text-start">Abone Araçları</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="table-responsive p-2">
+                            <table id="op_table" class="table table-striped table-bordered dt-responsive nowrap table-hover" style="vertical-align:middle; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Plaka</th>
+                                        <th>Tolerans (DK)</th>
+                                        <th>Bitiş</th>
+                                        <th>Son Ücret</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                </div>
+            </div><!--end OfficialPlates Table-->
+            <div class="col-6">
+                <div class="page-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row text-center">
+                                <h3 class="page-title col-sm-12 text-start">Araç Lokasyonları</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="table-responsive p-2">
+                            <table id="opl_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                <thead>
+                                    <tr>
+                                        <th>Lokasyon Adı</th>
+                                        <th>Lokasyonu Sil</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                    </div>
+                </div>
+            </div><!--end OfficialPlatesLocations Table-->
+        </div>
+    </div>
+</div><!--end OfficialPlates and OfficialPlatesLocations Tables-->
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel">Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" onclick=";" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form">
+                    <input type="hidden" value="0" id="updateId1" name="updateId1" />
+
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Adı Soyadı / Ünvanı <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="adsoyad" name="adsoyad" placeholder="Adı Soyadı / Ünvanı">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-phone-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Telefon 1 No</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="tel" id="tel1" name="tel1" placeholder="(XXX)XXX XX XX" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-phone-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Telefon 2 No</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="tel" id="tel2" name="tel2" placeholder="(XXX)XXX XX XX" maxlength="10">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">E-Posta Adresi</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="mail" name="mail" placeholder="E-Posta Adresi">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Vergi Dairesi</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="vergidairesi" name="vergidairesi" placeholder="Vergi Dairesi">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">TC Kimlik No / Vergi No <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="tckimlik" name="tckimlik" placeholder="TC Kimlik No / Vergi No" maxlength="11">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Adres</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="adres" name="adres" placeholder="Adres">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Meslek</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="meslek" name="meslek" placeholder="Meslek">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Eğitim Durumu</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="ogretim" name="ogretim" placeholder="Eğitim Durumu">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">İş yeri</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="isyeri" name="isyeri" placeholder="İş yeri">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Görevi</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="gorevi" name="gorevi" placeholder="Görevi">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Medeni Hali</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="medeniHali" name="medeniHali" placeholder="Medeni Hali">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Tipi</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" id="tipi" name="tipi" placeholder="Tipi">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-date-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-end">Doğum Tarihi</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="date" value="date" id="tarih" name="tarih">
+                        </div>
+                    </div>
+
+                </form>
+            </div><!--end modal body-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="document.location.reload(true);" data-bs-dismiss="modal">Vazgec</button>
+            </div>
+        </div>
+    </div>
+</div><!--end Customer's Modal-->
+
+<div class="modal fade" id="staticBackdrop2" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel2">Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal header-->
+            <div class="modal-body">
+                <form id="update-form2">
+                    <input type="hidden" value="0" id="updateId2" name="updateId2" />
+                    <input type="hidden" value="0" id="updateId3" name="updateId3" />
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-start">Plaka <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" typeof="text" id="licenseplate" name="licenseplate" placeholder="Plaka" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-text-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-start">Abone</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" typeof="text" id="grup" name="grup" placeholder="Abone" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label text-start" style="font-weight:bold">Tolerans</label>
+                        <div class="col-md-9">
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check1" value="30" />
+                                <label class="form-check-label" for="check1">30</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check5" value="180" />
+                                <label class="form-check-label" for="check5">180</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check9" value="600" />
+                                <label class="form-check-label" for="check9">600</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check13" value="1080" />
+                                <label class="form-check-label" for="check13">1080</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check2" value="60" />
+                                <label class="form-check-label" for="check2">60</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check6" value="240" />
+                                <label class="form-check-label" for="check6">240</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check10" value="720" />
+                                <label class="form-check-label" for="check10">720</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check14" value="1200" />
+                                <label class="form-check-label" for="check14">1200</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check3" value="90" />
+                                <label class="form-check-label" for="check3">90</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check7" value="360" />
+                                <label class="form-check-label" for="check7">360</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check11" value="840" />
+                                <label class="form-check-label" for="check11">840</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check15" value="1440" />
+                                <label class="form-check-label" for="check15">1440</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check4" value="120" />
+                                <label class="form-check-label" for="check4">120</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check8" value="480" />
+                                <label class="form-check-label" for="check8">480</label>
+                            </div>
+                            <div class="form-check form-check-inline col-sm-2">
+                                <input class="form-check-input" type="radio" name="freetime" id="check12" value="960" />
+                                <label class="form-check-label" for="check12">960</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="example-number-input" style="font-weight:bold" class="col-sm-3 form-label align-self-center mb-lg-0 text-start">Alınan Tutar <span class="text-danger">*</span></label>
+                        <div class="col-sm-9">
+                            <input class="form-control" typeof="number" id="fee" name="fee" placeholder="₺0,00" />
+
+                        </div>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label text-start" for="Dropdown2"><b>Abone </b> <span class="text-danger">*</span></label>
+                        <select class="col-md-9 dropdown-control" id="CustomerDropdown2" name="cusId"></select>
+                    </div>
+
+                </form>
+            </div><!--end modal body-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd2();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Vazgec</button>
+            </div>
+        </div>
+    </div>
+
+</div><!--end OfficialPlate's Modal-->
+
+<div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel3" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel3">Lokasyon Ekle</h6>
+                <button type="button" class="btn-close" onclick="document.location.reload(true);" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form3">
+                    <input type="hidden" value="0" id="updateId3" name="updateId3" />
+
+
+                    <div class="selectedId mb-3 row">
+                        <label class="col-sm-3 form-label text-start" for="oplmultiple1"><b>Lokasyon </b><span class="text-danger">*</span></label>
+                        <select class="col-md-8 multiple-select debts" multiple="multiple" id="oplmultiple1" name="locId"></select>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label text-start" for="Dropdown3"><b>Araç </b><span class="text-danger">*</span></label>
+                        <select class="col-md-9 dropdown-control" id="opDropdown3" name="PlateId"></select>
+                    </div>
+
+
+
+
+                </form>
+            </div><!--end modal body-->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:addOPLocation();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" data-bs-dismiss="modal">Vazgec</button>
+            </div>
+        </div>
+    </div>
+</div><!--end OfficialPlatesLocation's Modal-->
+@section scripts {
+
+
+    <script type="text/javascript">
+
+        var customerTablo = null;
+        var opTablo = null;
+        var oplTablo = null;
+
+        $((_$) => {
+            getSelect();
+            getCustomersAjax();
+            getDropdown2();
+            getDropdown3();
+            showOPLocations(sessionStorage.getItem('_selectId') || 0);
+            $('#oplmultiple1').select2({ dropdownParent: $('#staticBackdrop3'), width: '100%', placeholder: "Seçiniz..." });
+        });
+
+        $('#customer_table').on('click', 'tr', function () {
+            if (this.parentElement.nodeName == "TBODY") {
+                let _data = customerTablo.row(this).data();
+
+                $('#customer_table tbody tr').css("background-color", "#ffffff");
+                $('#customer_table tbody tr').css("color", "#000000");
+
+                $(this).css("background-color", "#ffb822");
+                $(this).css("color", "#ffffff");
+
+                showOPlates(_data.cusId);
+            }
+        });
+
+        $('#op_table').on('click', 'tr', function () {
+            if (this.parentElement.nodeName == "TBODY") {
+                let _data = opTablo.row(this).data();
+                $('#op_table tbody tr').css("background-color", "#ffffff");
+                $('#op_table tbody tr').css("color", "#000000");
+                console.log(_data);
+                $(this).css("background-color", "#ffb822");
+                $(this).css("color", "#ffffff");
+
+                showOPLocations(_data.pId);
+                getCustomersAjax(_data.cusId);
+            }
+        });
+
+        var getCustomersAjax = (_cusId) => {
+
+
+            if (customerTablo != null) {
+                customerTablo.destroy();
+                customerTablo = null;
+            }
+            console.log(_cusId);
+            if (customerTablo == null)
+                customerTablo = $('#customer_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowCustomers", "Customers")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.cusId = _cusId;
+                        }
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.cusId;
+                            }, "name": "cusId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.adsoyad;
+                            }, "name": "adsoyad"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.tel1;
+                            }, "name": "tel1"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.mail;
+                            }, "name": "mail"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.tckimlik;
+                            }, "name": "tckimlik"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.vergidairesi;
+                            }, "name": "vergidairesi"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal(${row.cusId})"><i class="mdi mdi-square-edit-outline""></i></button>
+
+                                                            <button type="button" id="delete" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteCustomer(${row.cusId})"><i class="mdi mdi-trash-can-outline""></i></button>
+                                                                            <button type="button" id="delete" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal4(${row.cusId})"><i class="mdi mdi-car-multiple"></i></button>
+                                                            `;
+
+                            }, "name": "cusId", "name": "cusId"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#customer_table_filter input').unbind();
+                        $('#customer_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                customerTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }//Aboneler tablosunu göster.
+
+        var showOPlates = (_sID) => {
+
+            if (opTablo != null) {
+                opTablo.destroy();
+                opTablo = null;
+            }
+
+            var AracSorgula = document.getElementById('aracSorgula').value;
+
+            if (opTablo == null) {
+                opTablo = $('#op_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowOPlates", "Customers")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.sId = _sID;
+                            d._plate = AracSorgula;
+                        }
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.pId;
+                            }, "name": "pId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.freetime;
+                            }, "name": "freetime"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.finishdate;
+                            }, "name": "finishdate"
+                        },
+                        {"render": (data, type, row) => {if(row.fee == null) return row.fee; else return '₺ ' + row.fee;}, "name": "fee"},
+                        {
+                            "render": function (data, type, row) {
+                                return `<button type="button" class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal2(${row.pId})"><i class="mdi mdi-square-edit-outline""></i></button>
+
+                                                                                                                                                                <button type="button" id="delete" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteOPlate(${row.pId})"><i class="mdi mdi-trash-can-outline""></i></button>
+
+                                                                                                                                                                 <button type="button" id="add" class="btn btn-outline-dark pt-2" onclick="javascript:getsetModal3(${row.pId})"><i class="mdi mdi-map-marker-plus"></i></button>
+
+                                                                                                                                                                `;
+
+                            }, "name": "pId", "name": "pId", "name": "pId", "name": "pId"
+                        },
+
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#op_table_filter input').unbind();
+                        $('#op_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                opTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+                    }
+                })
+            } else opTablo.ajax.reload();
+        }//Araçlar tablosunu göster.
+
+        var showOPLocations = (_sId) => {
+
+            sessionStorage.setItem('_selectId', _sId);
+            $('#opl_table').empty();
+            $.getJSON('@Url.Action("ShowOPLocations", "Customers")', { sId: sessionStorage.getItem('_selectId') }, (d, s) => {
+                if (s === "success") {
+
+                    for (let item of d.data) {
+                        let str = ` <tr class = "row">
+                                                                    <td class="col-sm-11" style="height: 30px;" >→${item.LocId}</td>
+                                                                    <td class="col-sm-1">
+                                                                    <button type="button" id="delete" class="btn btn-outline-dark " onclick="javascript:deleteOPLocation(${item.opl})"><i class="ti-minus"></i></button>
+                                                                    </td>
+                                                                    </tr>`;
+                        $('#opl_table').append(str);
+                    }
+                }
+                else {
+                    console.log("hata");
+                }
+            })
+        }//Lokasyonlar tablosunu göster.
+
+        //Add - Update ?
+        var getUpdateOrAdd = () => {
+            if (document.getElementById("updateId1").value > 0) {
+                javascript: updateCustomer();
+            }
+            else {
+                javascript: addCustomer();
+            }
+        }
+
+        var getUpdateOrAdd2 = () => {
+
+            if (document.getElementById("updateId2").value > 0 && document.getElementById("updateId3").value) {
+                javascript: updateOPlate();
+            }
+            else {
+                javascript: addOPlate();
+            }
+        }
+
+        //Verileri getir.
+        var getsetModal = (selectId) => {
+            $('#updateId1').val("");
+            $.getJSON('@Url.Action("GetCustomer", "Customers")', { sId: selectId }, (d, s) => {
+
+                if (s === 'success') {
+
+                    $('#staticBackdrop').modal('show');
+                    $('#updateId1').val(d.data.Id);
+                    $('#adsoyad').val(d.data.Adisoyadi);
+                    $('#tel1').val(d.data.Tel1);
+                    $('#tel2').val(d.data.Tel2);
+                    $('#mail').val(d.data.Mail);
+                    $('#vergidairesi').val(d.data.Vergidairesi);
+                    $("#tckimlik").val(d.data.Tckimlik);
+                    $('#adres').val(d.data.Adres);
+                    $('#meslek').val(d.data.Meslek);
+                    $('#ogretim').val(d.data.Ogretim);
+                    $('#medeniHali').val(d.data.Medeni);
+                    $('#tipi').val(d.data.Tipi);
+                    $('#gorevi').val(d.data.Gorevi);
+                    $("#isyeri").val(d.data.İsyeri);
+                    $("#tarih").val(d.data.Dtarihi);
+                }
+            })
+        }
+
+        var getsetModal2 = (selectId) => {
+            $('#updateId2').val("");
+            $.getJSON('@Url.Action("GetOPlate", "Customers")', { sId: selectId }, (d, s) => {
+
+                if (s === 'success') {
+
+                    $('#staticBackdrop2').modal('show');
+                    $('#updateId2').val(d.data.PID);
+                    $('#licenseplate').val(d.data.LICENSEPLATE);
+                    $('#fee').val(d.data.FEE);
+                    $('#CustomerDropdown2').val(d.data.CUSTOMERBAG);
+                    $('#grup').val(d.data.GRUP);
+                    if (d.data.FREETIME == 0)
+                        document.getElementById('check1').checked = true;
+                    else
+                        document.getElementById('check2').checked = true;
+
+                }
+            })
+        }
+
+        var getsetModal3 = (selectId) => {
+            $('#updateId3').val("");
+            $.getJSON('@Url.Action("GetOPlate", "Customers")', { sId: selectId }, (d, s) => {
+
+                if (s === 'success') {
+
+                    $('#staticBackdrop3').modal('show');
+                    $('#updateId3').val(d.data.PID);
+
+                    $('#opDropdown3').val(d.data.PID);
+
+                }
+            })
+        }
+
+        var getsetModal4 = (selectId) => {
+            $('#updateId2').val("");
+            $.getJSON('@Url.Action("GetOPlateCus", "Customers")', { sId: selectId }, (d, s) => {
+
+                if (s === 'success') {
+                    console.log(d.data);
+                    $('#staticBackdrop2').modal('show');
+                    $('#updateId3').val(d.data.Id);
+                    $('#CustomerDropdown2').val(d.data.Id);
+
+
+                }
+            })
+        }
+
+        //Update
+        var updateCustomer = () => {
+
+            var Adsoyad = document.getElementById("adsoyad").value;
+            var Mail = document.getElementById("tel1").value;
+            var Tel1 = document.getElementById("mail").value;
+            var TcKimlik = document.getElementById("tckimlik").value;
+            var Vergidairesi = document.getElementById("vergidairesi").value;
+            var Tel2 = document.getElementById("tel2").value;
+            var Adres = document.getElementById("adres").value;
+            var Meslek = document.getElementById("meslek").value;
+            var Ogretim = document.getElementById("ogretim").value;
+            var MedeniHali = document.getElementById("medeniHali").value;
+            var Tipi = document.getElementById("tipi").value;
+            var Gorevi = document.getElementById("gorevi").value;
+            var Isyeri = document.getElementById("isyeri").value;
+            var DTarihi = document.getElementById("tarih").value;
+
+
+
+            if (!Adsoyad || !TcKimlik || !DTarihi) {
+                Swal.fire(
+                    'Güncelleme Başarısız!',
+                    'Lütfen AdSoyad / TcKimlik / Tarih bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+            var formData = new FormData(document.getElementById('update-form'));
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateCustomer","Customers")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (d) {
+                    if (d.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (customerTablo != null)
+                            customerTablo.ajax.reload();
+
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+
+                },
+
+            });
+            if (customerTablo != null)
+                customerTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var updateOPlate = () => {
+
+            var licenseplate = document.getElementById("licenseplate").value;
+            var fee = document.getElementById("fee").value;
+            var cusId = document.getElementById("CustomerDropdown2").value;
+            var grup = document.getElementById("grup").value;
+
+            freetime = 0;
+
+            if ($('#check1').prop('checked'))
+                freetime = 30;
+            else if ($('#check2').prop('checked'))
+                freetime = 60;
+            else if ($('#check3').prop('checked'))
+                freetime = 90;
+            else if ($('#check4').prop('checked'))
+                freetime = 120;
+            else if ($('#check5').prop('checked'))
+                freetime = 180;
+            else if ($('#check6').prop('checked'))
+                freetime = 240;
+            else if ($('#check7').prop('checked'))
+                freetime = 360;
+            else if ($('#check8').prop('checked'))
+                freetime = 480;
+            else if ($('#check9').prop('checked'))
+                freetime = 600;
+            else if ($('#check10').prop('checked'))
+                freetime = 720;
+            else if ($('#check11').prop('checked'))
+                freetime = 840;
+            else if ($('#check12').prop('checked'))
+                freetime = 960;
+            else if ($('#check13').prop('checked'))
+                freetime = 1080;
+            else if ($('#check14').prop('checked'))
+                freetime = 1200;
+            else
+                freetime = 1440;
+
+
+            var formData = new FormData(document.getElementById('update-form2'));
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("UpdateOPlate","Customers")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (d) {
+                    console.log(d);
+                    console.log(d.Status);
+                    if (d.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (opTablo != null)
+                            opTablo.ajax.reload();
+
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+
+                },
+
+            });
+            if (opTablo != null)
+                opTablo.ajax.reload();
+
+            $('#staticBackdrop2').modal('hide');
+
+        }
+
+        //Add
+        var addCustomer = () => {
+
+            var AdsoyadControl = $('[name = "adsoyad"]').val();
+            var TcKimlikControl = $('[name ="tckimlik"]').val();
+
+
+            if (!AdsoyadControl || !TcKimlikControl) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen AdSoyad / TcKimlik / Tarih bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+            var formData = new FormData(document.getElementById("update-form"));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddCustomer","Customers")',
+                data: formData,
+                async: true,
+                contentType: false,
+                processData: false,
+                success: data => {
+
+                    if (data.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (customerTablo != null)
+                            customerTablo.ajax.reload();
+
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                },
+                error: function (ma, st) {
+                    if (ma.status === 0) {
+                        alert('bağlantı yok, ağı doğrulayın.');
+                    } else if (ma.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (ma.status == 500) {
+                        alert('Dahili Sunucu Hatası [500].');
+                    } else if (st === 'parsererror') {
+                        alert('İstenen JSON ayrıştırması başarısız');
+                    } else if (st === 'timeout') {
+                        alert('Zaman aşımı hatası.');
+                    } else if (st === 'abort') {
+                        alert('Ajax isteği reddedildi.');
+                    } else {
+                        alert('Yakalanmamış Hata.\n' + ma.responseText);
+                    }
+
+                }
+            });
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var addOPlate = () => {
+
+            var PlakaControl = $('[name = "licenseplate"]').val();
+            var TutarControl = $('[name = "fee"]').val();
+            var CustomerControl = $('[name = "CustomerDropdown2"]').val();
+
+
+            if (!PlakaControl || !TutarControl) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen Plaka / Alınan Tuatar bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+            var formData = new FormData(document.getElementById("update-form2"));
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddOPlate","Customers")',
+                data: formData,
+                async: true,
+                contentType: false,
+                processData: false,
+                success: data => {
+
+                    if (data.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (opTablo != null)
+                            opTablo.ajax.reload();
+
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+                },
+                error: function (ma, st) {
+                    if (ma.status === 0) {
+                        alert('bağlantı yok, ağı doğrulayın.');
+                    } else if (ma.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (ma.status == 500) {
+                        alert('Dahili Sunucu Hatası [500].');
+                    } else if (st === 'parsererror') {
+                        alert('İstenen JSON ayrıştırması başarısız');
+                    } else if (st === 'timeout') {
+                        alert('Zaman aşımı hatası.');
+                    } else if (st === 'abort') {
+                        alert('Ajax isteği reddedildi.');
+                    } else {
+                        alert('Yakalanmamış Hata.\n' + ma.responseText);
+                    }
+                }
+            });
+
+            $('#staticBackdrop2').modal('hide');
+
+        }
+
+        var addOPLocation = () => {
+
+            var oplmultiple = $('#oplmultiple1').val();
+
+            var plateControl = document.getElementById('opDropdown3').value;
+
+            $.post('@Url.Action("AddOPLocation","Customers")', { plateId: plateControl, locId: oplmultiple }, (d, s) => {
+                if (s === "success") {
+                    if (d.Status == true) {
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 1000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+
+                        if (oplTablo != null)
+                            oplTablo.ajax.reload();
+
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+                }
+            });
+
+            $('#staticBackdrop3').modal('hide');
+
+        }
+
+        //Delete
+        var deleteCustomer = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteCustomer","Customers")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+                                    customerTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (customerTablo != null)
+                                customerTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+        var deleteOPlate = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteOPlate","Customers")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    opTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+                            if (opTablo != null)
+                                opTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+        var deleteOPLocation = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteOPLocation","Customers")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                }
+                                else {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+
+                            }
+
+                            if (oplTablo != null)
+                                oplTablo.ajax.reload();
+                        });
+                    }
+                });
+        }
+
+
+        var getSelect = () => {
+            $.getJSON('@Url.Action("GetSelect", "Customers")', (d, s) => {
+                if (s === "success") {
+
+                    if (d.Data == null && d.data.length > 0) {
+                        $('#oplmultiple1').empty();
+                        $('#oplmultiple1').append(`<option value="">Lütfen Lokasyon Seçiniz...</option>`);
+                        for (let item of d.data) {
+                            $('#oplmultiple1').append(`<option value="${item.LocTariffAssignId}">${item.LocId}</option>`);
+                        }
+                    }
+                }
+
+            })
+        }
+
+        //Dropdown
+        var getDropdown2 = () => {
+
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown2", "Customers")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Abone Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].cusId + '">' + data.data[i].adsoyad + '</option>';
+                        }
+                        $("#CustomerDropdown2").html(s);
+                    }
+                });
+            });
+        }
+
+        var getDropdown3 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown3", "Customers")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Araç Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].cusId + '">' + data.data[i].adsoyad + '</option>';
+                        }
+                        $("#opDropdown3").html(s);
+                    }
+                });
+            });
+        }
+
+    </script>
+}

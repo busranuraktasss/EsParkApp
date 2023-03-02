@@ -1,0 +1,80 @@
+﻿@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>EsPark</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="shortcut icon" href="~/assets/images/espark.png">
+
+    <link href="~/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/icons.min.css" rel="stylesheet" type="text/css" />
+    <link href="~/assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body class="account-body accountbg">
+    <div class="container">
+        <div class="row vh-100 d-flex justify-content-center">
+            <div class="col-12 align-self-center">
+                <div class="row">
+                    <div class="col-lg-5 mx-auto">
+                        <div class="card">
+                            <div class="card-body p-0 auth-header-box">
+                                <div class="mb-3 row text-center p-3">
+                                    <h4 class=" pt-4 fw-semibold text-white font-40 " style="font-style:bold"> EsPark </h4>
+                                </div>
+                            </div>
+                            <div class="card-body p-0">
+                                @*Login Tablosu*@
+                                <div class="tab-content">
+                                    <div class="tab-pane active p-3" id="LogIn_Tab" role="tabpanel">
+                                        <form action="@Url.Action("Index", "Login")" method="POST" name="login_form" enctype="multipart/form-data">
+                                            <h1 class="text-center">Giriş Yap</h1>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Kullanıcı Adı<span class="text-danger">*</span></label>
+                                                <input type="text" name="UserName" class="form-control form-control-lg bg-white bg-opacity-5" value="" placeholder="" />
+                                            </div>
+                                            <div class="mb-3">
+                                                <div class="d-flex">
+                                                    <label class="form-label">Şifre <span class="text-danger">*</span></label>
+
+                                                </div>
+                                                <input type="password" name="Password" class="form-control form-control-lg bg-white bg-opacity-5" value="" placeholder="" />
+                                            </div>
+
+                                            <div class="mb-5 my-4">
+                                                <button type="submit" class="btn btn-primary w-100 waves-effect waves-light">Giriş Yap</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body bg-light-alt text-center">
+                                <span class="text-muted d-none d-sm-inline-block">
+                                    ESPARK <script>
+                                               document.write(new Date().getFullYear())
+                                    </script>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="#" data-toggle="scroll-to-top" class="btn-scroll-top fade"><i class="fa fa-arrow-up"></i></a>
+
+    </div>
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/assets/js/bootstrap.bundle.min.js"></script>
+    <script src="~/assets/js/waves.js"></script>
+    <script src="~/assets/js/feather.min.js"></script>
+    <script src="~/assets/js/simplebar.min.js"></script>
+</body>
+
+</html>

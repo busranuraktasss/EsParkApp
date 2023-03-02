@@ -1,0 +1,484 @@
+﻿@{
+    ViewData["Title"] = "Atamalar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="px-5 py-5">
+    <div class="px-5 py-5">
+        <div class="px-5 py-5 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <div class="row text-center">
+                        <h3 class="page-title col-sm-10 pt-1 text-start">Atamalar</h3>
+                        <button type="button" class="btn btn btn-outline-dark col-sm-2 align-self-end" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Atama Ekle</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-responsive p-2">
+                    <table id="atamalar_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>Lokasyon Adı</th>
+                                <th>Cihaz Seri No</th>
+                                <th>Kullanıcı Adı</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="card-body">
+            </div>
+        </div>
+    </div>
+</div><!--end Assignment Table-->
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title m-0" id="staticBackdropLabel">Ekle / Güncelle</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" onclick="" aria-label="Close"></button>
+            </div><!--end modal-header-->
+            <div class="modal-body">
+                <form id="update-form">
+                    <input type="hidden" value="0" id="assignId" name="assignId" />
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label" for="Dropdown1"><b>Lokasyon Adı </b><span class="text-danger">*</span></label>
+                        <select class="col-md-9 dropdown-control" id="lokasyonAdi" name="lokasyonAdi"></select>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label" for="Dropdown2"><b>Cihaz Seri No </b><span class="text-danger">*</span></label>
+                        <select class="col-md-9 dropdown-control" id="cihazNo" name="cihazNo"></select>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label" for="Dropdown3"><b>Kullanıcı Adı </b><span class="text-danger">*</span></label>
+                        <select class="col-md-9 dropdown-control" id="kullaniciAdi" name="kullaniciAdi"></select>
+                    </div>
+
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 form-label" style="font-weight:bold">Durum <span class="text-danger">*</span></label>
+                        <div class="col-md-9">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isactive" id="radio_aktif" value="1" />
+                                <label class="form-check-label" for="radio_aktif">Aktif</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="isactive" id="radio_pasif" value="0" />
+                                <label class="form-check-label" for="radio_pasif">Pasif</label>
+                            </div>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success btn-sm" onclick="javascript:getUpdateOrAdd();">TAMAM</button>
+                <button type="button" class="btn btn-primary btn-sm" onclick="document.location.reload(true);" data-bs-dismiss="modal">VAZGEÇ</button>
+            </div>
+        </div>
+    </div>
+</div><!--end Assignnmet's Modal-->
+@section scripts {
+    <script type="text/javascript">
+
+        var assignmentTablo = null;
+
+        $((_$) => {
+            getAssignmentsAjax();
+            getDropdown1();
+            getDropdown2();
+            getDropdown3();
+        });
+
+        var getAssignmentsAjax = () => {
+            if (assignmentTablo == null)
+                assignmentTablo = $('#atamalar_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: true,
+                    filter: true,
+                    orderMulti: true,
+                    order: [[1, "asc"]],
+                    ajax: {
+                        url: '@Url.Action("ShowAssignments", "Assignments")',
+                        type: "POST",
+                        datatype: "json"
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+
+                        {
+                            "render": (data, type, row) => {
+                                return row.AssignId;
+                            }, "name": "AssignId"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.lokasyonAdi;
+                            }, "name": "lokasyonAdi"
+
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.cihazNo;
+                            }, "name": "cihazNo"
+                        },
+                        {
+                            "render": (data, type, row) => {
+                                return row.kullaniciAdi;
+                            }, "name": "kullaniciAdi"
+                        },
+                        {
+                            "render": function (data, type, row) {
+                                return `<div><button class="btn btn btn-outline-dark pt-2" onclick="javascript:getsetModal(${row.AssignId})"><i class="dripicons-document-edit""></i></button>
+                                        <button type="button" id="delete" class="btn btn btn-outline-dark pt-2" onclick="javascript:deleteAssignment(${row.AssignId})"><i class="dripicons-trash""></i></button></div>`;
+
+                            }, "name": "AssignId", "name": "AssignId"
+                        },
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    initComplete: function (settings, json) {
+                        $('#atamalar_table_filter input').unbind();
+                        $('#atamalar_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                assignmentTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+        }
+
+        var getUpdateOrAdd = () => {
+            if (document.getElementById("assignId").value > 0) {
+                javascript: updateAssignment();
+            }
+            else {
+                javascript: addAssignment();
+            }
+        }
+
+        var addAssignment = () => {
+
+            var LokasyonAdiControl = $('[name = "lokasyonAdi"]').val();
+            var CihazNoControl = $('[name = "cihazNo"]').val();
+            var KullaniciAdiControl = $('[name = "kullaniciAdi"]').val();
+
+            if (document.getElementById('radio_aktif').checked == true) {
+
+                var DurumControl = 1;
+            }
+            else {
+                var DurumControl = 0;
+            }
+
+
+            if (LokasyonAdiControl == -1) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen LokasyonAdı bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            } if (CihazNoControl == -1) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen CihazNo bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            } if (KullaniciAdiControl == -1) {
+                Swal.fire(
+                    'Ekleme başarısız!',
+                    'Lütfen KullanıcıAdı bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+            $.post('@Url.Action("AddAssignment", "Assignments")', { isactive: DurumControl, lokasyonAdi: LokasyonAdiControl, cihazNo: CihazNoControl, kullaniciAdi: KullaniciAdiControl }, (d, s) => {
+                if (s === "success") {
+
+                    if (d.Status == true) {
+
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (assignmentTablo != null)
+                            assignmentTablo.ajax.reload();
+
+
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Ekleme işlemi başarıyla gerçekleşti.'
+                        })
+
+                        $('staticBackdrop').modal("hide");
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            text: 'Ekleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+                }
+
+            });
+
+
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        var deleteAssignment = (delId) => {
+            Swal.fire({
+                title: 'Silmek istediğinize emin misiniz?',
+                icon: 'question',
+                showCancelButton: true,
+                cancelButtonText: 'Hayır',
+                confirmButtonColor: '#4a804d',
+                cancelButtonColor: '#b22222',
+                confirmButtonText: 'Evet'
+            })
+                .then((result) => {
+
+                    if (result.value == true) {
+                        $.getJSON('@Url.Action("DeleteAssignmnet","Assignments")', { pr: delId }, (d, s) => {
+                            if (s === "success") {
+
+                                if (d.Status == true) {
+                                    assignmentTablo.ajax.reload();
+                                    Swal.fire({ title: 'Silme işlemi gerçekleşti.', confirmButtonColor: '#1c6071', confirmButtonText: 'Tamam' });
+                                } else {
+                                    console.log(d);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Oops...',
+                                        text: 'Silme işlemi gerçekleşemedi.'
+                                    });
+                                }
+                            }
+                            if (assignmentTablo != null)
+                                assignmentTablo.ajax.reload();
+                        });
+
+                    }
+                });
+        }
+
+        var getsetModal = (selectId) => {
+
+            $('#assignId').val("");
+            $.getJSON('@Url.Action("GetAssignment", "Assignments")', { sId: selectId }, (d, s) => {
+                if (s === 'success') {
+                    console.log(d);
+                    $('#assignId').val(d.data.ASSIGNMENTID);
+                    $('#staticBackdrop').modal('show');
+
+
+                    $('#kullaniciAdi').val(d.data.USERID);
+                    $('#cihazNo').val(d.data.TERMID);
+                    $('#lokasyonAdi').val(d.data.LOCID);
+
+                    if (d.data.ISACTIVE == 1) {
+                        document.getElementById('radio_aktif').checked = true;
+
+                    }
+                    else {
+                        document.getElementById('radio_pasif').checked = true;
+
+
+                    }
+                }
+            })
+        }
+
+        var updateAssignment = () => {
+
+            var lokasyonAdi = document.getElementById("lokasyonAdi").value;
+            var cihazNo = document.getElementById("cihazNo").value;
+            var kullaniciAdi = document.getElementById("kullaniciAdi").value;
+            var isactive = 0;
+
+            if ($('#radio_aktif').prop('checked'))
+                isactive = 1;
+
+
+            if (lokasyonAdi == -1) {
+                Swal.fire(
+                    'Güncelleme başarısız!',
+                    'Lütfen LokasyonAdı bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            } if (cihazNo == -1) {
+                Swal.fire(
+                    'Güncelleme başarısız!',
+                    'Lütfen CihazNo bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            } if (kullaniciAdi == -1) {
+                Swal.fire(
+                    'Güncelleme başarısız!',
+                    'Lütfen KullanıcıAdı bilgisini giriniz.',
+                    'warning'
+                )
+                return;
+            }
+
+            var formData = new FormData(document.getElementById('update-form'));
+
+            $.ajax({
+
+
+                type: "POST",
+                url: '@Url.Action("UpdateAssignment","Assignments")',
+                data: formData,
+                processData: false,
+                contentType: false,
+                cache: false,
+                success: function (d) {
+                    if (d.Status == true) {
+
+                        console.log('Gelen -> ', d);
+                        const Toast = Swal.mixin({
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 2000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer)
+                                toast.addEventListener('mouseleave', Swal.resumeTimer)
+                            }
+                        })
+                        if (assignmentTablo != null)
+                            assignmentTablo.ajax.reload();
+
+                        Toast.fire({
+                            ion: 'success',
+                            title: 'Güncelleme işlemi başarıyla gerçekleşti.'
+                        })
+                    }
+                    else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Güncelleme işlemi gerçekleşemedi.'
+                        });
+                    }
+
+
+                },
+                error: function (ma, st) {
+                    if (ma.status === 0) {
+                        alert('bağlantı yok, ağı doğrulayın.');
+                    } else if (ma.status == 404) {
+                        alert('Requested page not found. [404]');
+                    } else if (ma.status == 500) {
+                        alert('Dahili Sunucu Hatası [500].');
+                    } else if (st === 'parsererror') {
+                        alert('İstenen JSON ayrıştırması başarısız');
+                    } else if (st === 'timeout') {
+                        alert('Zaman aşımı hatası.');
+                    } else if (st === 'abort') {
+                        alert('Ajax isteği reddedildi.');
+                    } else {
+                        alert('Yakalanmamış Hata.\n' + ma.responseText);
+                    }
+                }
+            });
+            if (assignmentTablo != null)
+                assignmentTablo.ajax.reload();
+
+            $('#staticBackdrop').modal('hide');
+
+        }
+
+        //Dropdown
+        var getDropdown1 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown1", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Lokasyon Adı Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].lokasyonAdi + '</option>';
+                        }
+                        $("#lokasyonAdi").html(s);
+                    }
+                });
+            });
+        }
+
+        var getDropdown2 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown2", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Cihaz Seri No Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].cihazNo + '</option>';
+                        }
+                        $("#cihazNo").html(s);
+                    }
+                });
+            });
+        }
+
+        var getDropdown3 = () => {
+            $(document).ready(function () {
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("Dropdown3", "Assignments")',
+                    data: "json",
+                    success: function (data) {
+
+                        var s = '<option value="-1">Lütfen Kullanıcı Adı Seçiniz...</option>';
+                        for (var i = 0; i < data.data.length; i++) {
+
+                            s += '<option value="' + data.data[i].AssignId + '">' + data.data[i].kullaniciAdi + '</option>';
+                        }
+                        $("#kullaniciAdi").html(s);
+                    }
+                });
+            });
+        }
+
+    </script>
+}

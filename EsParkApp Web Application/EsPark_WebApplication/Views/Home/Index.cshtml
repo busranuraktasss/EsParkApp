@@ -1,0 +1,593 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@section css{
+
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/buttons.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/responsive.bootstrap4.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+
+}
+
+    <div class="row py-5">
+        <div class="pt-5 ">
+            <div class="pt-5 col-12 row">
+                <div class="col-1"></div>
+                <div class="col-2">
+                    <div class="card-header" style="height:45px; background-color:#FFB822">
+                        <h6 class="my-1" style="color:white">GÜN ÖZETİ</h6>
+                    </div>
+                    <div class="row my-2">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg mdi mdi-account-star me-2" style="color:#FFB822;"></i>Aktif personel adedi
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none; background-color:white" id="aktifPersonel" name="aktifPersonel" />
+                    </div>
+                    <div class="row my-1">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg dripicons-location me-2" style="color:#FFB822;"></i>Aktif lokasyon adedi
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none;background-color:white" id="aktiflokasyon" name="aktiflokasyon" />
+                    </div>
+                    <div class="row my-1">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg mdi mdi-car me-2" style="color:#FFB822;"></i>Park eden araç adedi
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none;background-color:white" id="parkEdenArac" name="parkEdenArac" />
+                    </div>
+                    <div class="row my-1">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg mdi mdi-alarm-light-outline me-2 " style="color:#FFB822;"></i>İçerideki araç adedi
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none;background-color:white" id="icerdekiArac" name="icerdekiArac" />
+                    </div>
+                    <div class="row my-1">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg mdi mdi-briefcase-plus me-2" style="color:#FFB822;"></i>Tahsilat yapılan araç a.
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none;background-color:white" id="TahsilatliArac" name="TahsilatliArac" />
+                    </div>
+                    <div class="row my-1">
+                        <label for="example-text-input" style=" font-size:14px; border:none; outline:none;" class="my-1 col-sm-9 form-label align-self-center text-start">
+                            <i class="fa-lg mdi mdi-briefcase-minus me-2" style="color:#FFB822;"></i>Borçlu çıkan araç adedi
+                        </label>
+                        <input type="text" disabled="disabled" class="col-sm-3 text-center" style="border:none ; outline:none;background-color:white" id="BorcluArac" name="BorcluArac" />
+                    </div>
+                </div>
+                <div class=" col-9">
+                    <ul class="nav nav-tabs " role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-bs-toggle="tab" href="#vardiya" role="tab" aria-selected="true">VARDİYA İZLEME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#parklanma" role="tab" aria-selected="false">PARKLANMA İZLEME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="tab" href="#harita" role="tab" aria-selected="false">HARİTA GÖRÜNÜMÜ</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        @*----------------------------------------------------------------------------------------------------*@
+                        <div class="tab-pane active" id="vardiya" role="tabpanel">
+                            <div class="row" id="aktif_vardiyalar">
+                            </div>
+                            <input type="text" disabled="disabled" class="text-end mx-2" style="border:none ; outline:none;background-color:white" id="Bilgi" name="Bilgi" />
+                            <input style="border:none ; outline:none;" />
+                        </div>
+                        @*----------------------------------------------------------------------------------------------------*@
+                        <div class="tab-pane" id="parklanma" role="tabpanel">
+                            <div class=row mt-5>
+
+                                <div class="card">
+                                    <div class="table-parklanma p-2 table-responsive">
+                                        <table id="parklanma_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle;">
+                                            <thead>
+                                                <tr>
+                                                    <th>KayıtNo</th>
+                                                    <th>Plaka</th>
+                                                    <th>Başlangıç</th>
+                                                    <th>Tolerans</th>
+                                                    <th>Aşılan Süre(DK)</th>
+                                                    <th>Ödenmesi<br/>Gereken<br/>Tutar</th>
+                                                    <th>Ödenen Tutar</th>
+                                                    <th>Çıkış</th>
+                                                    <th>Lokasyon Adı</th>
+                                                    <th>Kullanıcı Adı</th>
+                                                    <th>Cihaz No</th>
+                                                    <th>Borçlu Çıkış</th>
+
+                                                </tr>
+                                            </thead>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*----------------------------------------------------------------------------------------------------*@
+                        <div class="tab-pane" id="harita" role="tabpanel">
+                            <div id="map" style="height:500px;"></div>
+                        </div>
+                        @*----------------------------------------------------------------------------------------------------*@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="vardiya_detayı" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="mb-2" style="color:white; background-color:#1c2d41; height:3px; font-size:12px; font-weight:bold;">VARDİYA DETAYI</label>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="update-form">
+                        <div class="card-header">
+                            <label class="mb-2" style="height:3px; font-size:12px; font-weight:bold;">VARDİYA BİLGİLERİ</label>
+                        </div>
+                        <input type="text" disabled="disabled" class="my-3 text-center" style="color:#1c2d41; background-color:white ; border-style:none ; width:33% ; font-size:20px ; font-weight:bold" id="cardOpen_username" name="cardOpen_username" />|<input type="text" disabled="disabled" class=" text-center" style="color:#1c2d41; background-color:white ; border-style:none ; width:33% ; font-size:20px ; font-weight:bold" id="cardOpen_locname" name="cardOpen_locname" />|<input type="text" disabled="disabled" class=" text-center" style="color:#1c2d41; background-color:white ; border-style:none ; width:33% ; font-size:20px ; font-weight:bold" id="cardOpen_serialno" name="cardOpen_serialno" />
+
+                        <div class="card-header">
+                            <label class="mb-2" style="height:3px; font-size:12px; font-weight:bold;">PARKLANMA BİLGİLERİ</label>
+                        </div>
+                        <div class="card">
+                            <div class="table-responsive p-2 table-responsive">
+                                <table id="cardOpen_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th>ARAÇ PLAKASI</th>
+                                            <th>GİRİŞ SAATİ</th>
+                                            <th>PLANLANAN BİTİŞ SAATİ</th>
+                                            <th>PLANLANAN DAKİKA</th>
+                                            <th>GİRİŞTE PLANLANAN ÖDEME</th>
+                                            <th>GİRİŞTE ALINAN ÖDEME</th>
+                                            <th>AŞILAN SÜRE (DK.)</th>
+                                            <th>ÇIKIŞTA HESAPLANAN ÜCRET</th>
+                                            <th>ÇIKIŞTA ALINAN ÜCRET</th>
+                                            <th>ÇIKIŞ ZAMANI</th>
+                                            <th>BORÇ ?</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                        <tr>
+
+                                            <th colspan="4">
+                                                Girişte Alınan Ödeme Toplamı:   ₺<b id="sum1"></b><br />
+                                                Çıkışta Alınan Ücret Toplamı:   ₺<b id="sum2"></b>
+                                            </th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                            <th>&nbsp;</th>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+                        </div><!--Seçili vardiyaya ait Tablo-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts {
+    <script type="text/javascript" src="~/plugins/datatables/jszip.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/vfs_fonts.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+
+    <script type="text/javascript" src="https://api-maps.yandex.ru/2.1/?lang=en_RU&amp;apikey=<788dcc52-1903-474c-96f8-82b437dcc613"></script>
+
+    <script type="text/javascript">
+
+        parkingsTablo = null;
+        cardOpenTablo = null;
+
+        $((_$) => {
+            getSummary();
+            getShowParkings();
+            getActiveShift();
+        });
+
+        ymaps.ready(init);
+
+        function init() {
+
+            var myMap = new ymaps.Map("map", {
+                center: [39.7817751, 30.518766],
+                zoom: 15
+            }, {
+                searchControlProvider: 'yandex#search'
+            })
+
+            $.post('@Url.Action("ShiftMapId","Home")', {}, (d, s) => {
+
+                for (var i = 0; i < d.data.length; i++) {
+
+                    $.post('@Url.Action("ShiftMap","Home")', { sId: d.data[i] }, (d, s) => {
+                        myGeoObject = new ymaps.GeoObject({
+                            geometry: {
+                                type: "Point",
+                                coordinates: [d.data[0].Lat, d.data[0].Lng]
+                            },
+                            properties: {
+                                iconContent: d.data[0].JobId
+                            }
+                        }, {
+                            preset: 'islands#redStretchyIcon'
+                        })
+                        myMap.geoObjects
+                            .add(myGeoObject);
+                      
+                    })
+                }
+            })
+        }
+
+        var getActiveShift = () => {
+             $('#Bilgi').val('Vardiya Bilgileri Yükleniyor...');
+
+            Swal.fire({
+                title:'Vardiya Bilgilerinin Yüklenmesi Biraz Zaman Alabilir.',
+                confirmButtonColor: '#FFB822',
+                confirmButtonText: 'Tamam',
+                text: 'Vardiya bilgilerinin yüklenebilmesi için lütfen anasayfadan ayrılmayın!'
+            });
+            $.post('@Url.Action("GetActiveShift","Home")', {}, (d, s) => {
+                
+                for (var i = 0; i < d.Data.length; i++) {
+                    var id = d.Data[i].ID;
+                    var username = d.Data[i].USERNAME;
+                    var locname = d.Data[i].LOCNAME;
+                    var serialno = d.Data[i].SERIALNO;
+                    var arac = d.Data[i].ARAC;
+                    var tahsil = d.Data[i].TAHSIL;
+                    var tahsil_kart = d.Data[i].TAHSIL_KART;
+                    var borc = d.Data[i].BORC;
+                    var borc_kart = d.Data[i].BORC_KART;
+                    var toplanmasi_gereken = d.Data[i].TOPLANMASI_GEREKEN;
+                    var toplam = d.Data[i].TOPLAM;
+                    var battery = d.Data[i].BATTERY;
+                    var doluluk = d.Data[i].DOLULUK;
+
+                    $("#aktif_vardiyalar").append(`
+                                <div class="card col-sm-4" >
+                                    <button style="border-color:none;" id="${id}" ondblclick="javascript:cardOpen(${id},'${username}','${locname}','${serialno}');">
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:13px; font-weight:bold;">VARDİYA NO</label>
+                                        <label class="col-2 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">${id}</label>
+                                        <p class="col-4 text-end mb-1" style="font-size:13px; font-weight:bold;">Şarj  %${battery}<i class="mdi mdi-battery-charging-60"></i></p>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">KULLANICI</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">${username}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">LOKASYON</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">${locname}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">CİHAZ NO</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">${serialno}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">ARAÇLAR</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;">${arac}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;  ">NAKİT TAHSİLAT</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${tahsil}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;  ">KREDİ KARTI</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${tahsil_kart}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;  ">BORÇ NAKİT TAH.</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${borc}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px;  ">BORÇ K.KARTI TAH.</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${borc_kart}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:13px; font-weight:bold;">TOPLANMASI GEREKEN</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${toplanmasi_gereken}</label>
+                                    </div>
+                                    <div class="  row">
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:13px; font-weight:bold;">TOPLANAN</label>
+                                        <label class="col-6 form-label align-self-center text-start" for="example-text-input" style="font-size:12px; " >${toplam}</label>
+                                    </div>
+                                    <div class="row">
+                                         <p class="text-muted text-end mb-1">%${doluluk} - Doluluk Oranı</p>
+                                         <div class="progress my-1 mx-1" style="height:10px; width:98%;">
+                                             <div class="progress-bar bg-success" role="progressbar" style="width: ${doluluk}%;" aria-valuenow="${doluluk}" aria-valuemin="0" aria-valuemax="100"></div>
+                                         </div>
+                                    </div>
+                                    </button>
+                                </div>`);
+                    
+                }
+                $('#Bilgi').val('');
+
+                Swal.fire('Vardiya Bilgileri Yüklendi.');
+            })
+        }
+
+        var cardOpen = (cardId, cardUsername, cardLocname, cardSerialno) => {
+
+            $('#cardOpen_username').val(cardUsername);
+            $('#cardOpen_locname').val(cardLocname);
+            $('#cardOpen_serialno').val(cardSerialno);
+
+            if (cardOpenTablo == null)
+                cardOpenTablo = $('#cardOpen_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: false,
+                    sScrollX: "100%",
+                    filter: false,
+                    orderMulti: true,
+                    order: [[1, "desc"]],
+                    ajax: {
+                        url: '@Url.Action("CardOpenShow", "Home")',
+                        type: "POST",
+                        datatype: "json",
+                        data: function (d) {
+                            d.Id = cardId;
+                            d.username = cardUsername;
+                            d.serialno = cardSerialno;
+                            d.locname = cardLocname;
+                        }
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },//araç plakası
+                        {
+                            "render": (data, type, row) => {
+                                return new Date(row.startdate).toLocaleDateString('tr-TR', { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+                            }, "name": "startdate"
+                        },//giriş saati
+                        {
+                            "render": (data, type, row) => {
+                                return new Date(row.enddate).toLocaleDateString('tr-TR', { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+                            }, "name": "enddate"
+                        },//planlanan bitiş saati
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingduration;
+                            }, "name": "parkingduration"
+                        },//planlanan dakika
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfee;
+                            }, "name": "parkingfee"
+                        },//girişte planlanan ödeme
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfee;
+                            }, "name": "paidfee"
+                        },//girişte alınan ödeme
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingdurationforovertime;
+                            }, "name": "parkingdurationforovertime"
+                        },//aşılan süre
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfeeforovertime;
+                            }, "name": "parkingfeeforovertime"
+                        },//çıkışta hesaplanan ücret
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfeeforovertime;
+                            }, "name": "paidfeeforovertime"
+                        },//çıkışta alınan ücret
+                        {
+                            "render": (data, type, row) => {
+                                return new Date(row.outdate).toLocaleDateString('tr-TR', { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+                            }, "name": "outdate"
+                        },//çıkış saati
+                        {
+                            "render": (data, type, row) => {
+                                return row.indebted;
+                            }, "name": "indebted"
+                        },//borç?
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: true,
+                    footerCallback: function (row, data, start, end, display) {
+
+                        let sum1 = 0;
+                        data.forEach(element => {
+                            sum1 += element.paid_fee;
+                        })
+
+                        let sum2 = 0;
+                        data.forEach(element => {
+                            sum2 += element.paidfeeforovertime;
+                        })
+
+                        var Sum1 = parseFloat(sum1).toFixed(2);
+                        var Sum2 = parseFloat(sum2).toFixed(2);
+                        $('#sum1').html(Sum1);
+                        $('#sum2').html(Sum2);
+                    },
+                    initComplete: function (settings, json) {
+                        $('#cardOpen_table_filter input').unbind();
+                        $('#cardOpen_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                cardOpenTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'hidden',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+
+
+            $('#vardiya_detayı').modal('show');
+
+
+        }
+
+        var getSummary = () => {
+            //Aktif Personel Adedi
+            $.post('@Url.Action("GetAP", "Home")', {}, (d, s) => {
+                $('#aktifPersonel').val(d.data.length);
+            })
+            //Aktif Lokasyon Adedi
+            $.post('@Url.Action("GetAL", "Home")', {}, (d, s) => {
+                $('#aktiflokasyon').val(d.data.length);
+            })
+            //Park Eden Araç Adedi
+            $.post('@Url.Action("GetPEA", "Home")', {}, (d, s) => {
+                $('#parkEdenArac').val(d.data);
+            })
+            //İçerideki Araç Adedi
+            $.post('@Url.Action("GetIA", "Home")', {}, (d, s) => {
+                $('#icerdekiArac').val(d.data);
+            })
+            //Tahsilat Yapılan Araç Adedi
+            $.post('@Url.Action("GetTYA", "Home")', {}, (d, s) => {
+                $('#TahsilatliArac').val(d.data);
+            })
+            //Borçlu Çıkan Araç Adedi
+            $.post('@Url.Action("GetBCA", "Home")', {}, (d, s) => {
+                $('#BorcluArac').val(d.data);
+            })
+
+        }
+
+        var getShowParkings = () => {
+            if (parkingsTablo == null)
+                parkingsTablo = $('#parklanma_table').DataTable({
+                    language: { url: '../dil.json' },
+                    processing: true,
+                    serverSide: true,
+                    paging: false,
+                    filter: false,
+                    order: [[2, "desc"]],
+                    ajax: {
+                        url: '@Url.Action("GetShowParkings", "Home")',
+                        type: "POST",
+                        datatype: "json",
+                    },
+                    createdRow: function (row, data, dataIndex) {
+
+                    },
+                    columnDefs: [],
+                    columns: [
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingId;
+                            }, "name": "parkingId"
+                        },//id
+                        {
+                            "render": (data, type, row) => {
+                                return row.licenseplate;
+                            }, "name": "licenseplate"
+                        },//araç plakası
+                        {
+                            "render": (data, type, row) => {
+                                return new Date(row.startdate).toLocaleDateString('tr-TR', { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+                            }, "name": "startdate"
+                        },//giriş saati
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingduration;
+                            }, "name": "parkingduration"
+                        },//planlanan dakika
+                        {
+                            "render": (data, type, row) => {
+                                return row.parkingdurationforovertime;
+                            }, "name": "parkingdurationforovertime"
+                        },//aşılan süre
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfeeforovertime;
+                            }, "name": "paidfeeforovertime"
+                        },//çıkışta alınan ücret
+                        {
+                            "render": (data, type, row) => {
+                                return row.paidfee;
+                            }, "name": "paidfee"
+                        },//girişte alınan ödeme
+                        {
+                            "render": (data, type, row) => {
+                                return new Date(row.enddate).toLocaleDateString('tr-TR', { year: "numeric", month: "numeric", day: "numeric", hour: "numeric", minute: "numeric", second: "numeric" });
+                            }, "name": "enddate"
+                        },//planlanan bitiş saati
+                        {
+                            "render": (data, type, row) => {
+                                return row.locId;
+                            }, "name": "locId"
+                        },//lokasyon adi
+                        {
+                            "render": (data, type, row) => {
+                                return row.rowId;
+                            }, "name": "rowId"
+                        },//kullanici adi
+                        {
+                            "render": (data, type, row) => {
+                                return row.deviceId;
+                            }, "name": "deviceId"
+                        },//cihaz adi
+                        {
+                            "render": (data, type, row) => {
+                                return row.indebted;
+                            }, "name": "indebted"
+                        },//borç?
+                    ],
+                    fixedColumns: true,
+                    scrollCollapse: false,
+                    initComplete: function (settings, json) {
+                        $('#parking_table_filter input').unbind();
+                        $('#parking_table_filter input').bind('keyup', function (e) {
+                            if (e.keyCode == 13) {
+                                parkingsTablo.search(this.value).draw();
+                            }
+                        });
+
+                        $('.dataTables_scrollBody').removeAttr('style').css({
+                            'position': 'relative',
+                            'overflow-y': 'auto',
+                            'overflow-x': 'auto',
+                            'width': '100%',
+                            'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                        });
+
+                    }
+
+                })
+
+        }
+
+    </script>
+}

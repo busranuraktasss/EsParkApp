@@ -1,0 +1,851 @@
+﻿@{
+    ViewData["Title"] = "İşletme Raporu";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section css{
+
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/DataTables-1.13.1/css/dataTables.bootstrap5.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/buttons.bootstrap5.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/plugins/datatables/responsive.bootstrap4.min.css">
+}
+
+    <div class="px-5 pt-5">
+        <div class="px-5 pt-5">
+            <div class="px-5 pt-5 card-body">
+                <div class="card">
+                    <div class="card-header  ">
+                        <h3 class="page-title pt-1 text-start">İŞLETME RAPORU KRİTER SEÇİMİ</h3>
+                    </div>
+                </div>
+                <div class="card pt-3">
+                    <div style="margin:auto;">
+                        <div class="align-self-sm-center mx-lg-5 pt-1 my-3 row" style="width:500px">
+                            <label class="col-sm-4 form-label text-start mx-4 pt-1" for="date1"><b>TARİH SEÇİMİ</b></label>
+                            <div class="col-sm-6 mx-2 ">
+                                <input class="form-control" type="date" value="date" id="date1" name="date1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-5"></div>
+
+                        <div class="col-2 my-3">
+                            <div class="checkbox checkbox-warning">
+                                <input id="checkbox" type="checkbox">
+                                <label for="checkbox">
+                                    Detaylı Rapor
+                                </label>
+                            </div>
+                            <button class="btn btn-outline-warning text-center my-3" style="align-self:center; width:50%;" onclick="javascript:showBusinessReport();">GÖRÜNTÜLE</button>
+                        </div>
+
+                        <div class="col-5"></div>
+                    </div>
+                </div>
+                <img id="esparkLogo" src="~/assets/images/espark.png" alt="Logo" width="0" height="0" style="visibility:hidden;">
+            </div>
+        </div>
+    </div>
+
+    <div class="px-5 ">
+        <div class="px-5 ">
+            <div class="px-5">
+                <div class="card">
+                    <div class="table-responsive p-2">
+                        <table id="locReport_table" class="table table-striped table-bordered dt-responsive nowrap" style="vertical-align:middle; display:none;">
+                            <thead>
+                                <tr>
+                                    <th>LOKASYON ADI</th>
+                                    <th>KULLANICI ADI</th>
+                                    <th>TOPLANMASI<br />GEREKEN<br />PARKLANMA</th>
+                                    <th>TOPLANAN<br />PARKLANMA</th>
+                                    <th>PARKLANMA<br />-NAKİT</th>
+                                    <th>PARKLANMA<br />-KKARTI</th>
+                                    <th>BORÇ<br />TAHSİLATI</th>
+                                    <th>BORÇ TAH.<br />-NAKİT</th>
+                                    <th>BORÇ TAH.<br />-KKARTI</th>
+                                    <th>GENEL<br />TOPLAM</th>
+                                    <th>GENEL<br />TOPLAM<br />-NAKİT</th>
+                                    <th>GENEL<br />TOPLAM<br />-KKARTI</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <th >
+                                        TOPLANMASI GEREKEN TOPLAMI : <br /><br />
+                                        BORÇ TAHSİLAT TOPLAMI : <br />
+                                    </th>
+                                    <th>
+                                        <br /><b id="sum1"></b><br /><br /><br />
+                                        <b id="sum2"></b><br /><br /><br />
+                                    </th> 
+                                    <th >
+                                        GENEL TOPLAM :<br /><br />
+                                        GENEL TOPLANAN<br />TOPLAMI :
+                                    </th>
+                                    <th>
+                                        <b id="sum3"></b><br /><br /><br />
+                                         <b id="sum4"></b>
+                                    </th>
+                                    <th>
+                                        BORÇ TAHSİLAT<br />NAKİT TOPLAMI : <br /><br />
+                                        GENEL NAKİT<br />TOPLAMI :
+                                    </th>
+                                    <th>
+                                        <b id="sum5"></b><br /><br /><br />
+                                        <b id="sum6"></b>
+                                    </th>
+                                    <th>
+                                        TOPLANAN NAKİT<br />TOPLAMI : <br /><br />
+                                        BORÇ TAHSİLAT<br />KREDİ TOPLAMI:
+                                    </th>
+                                    <th>
+                                        <b id="sum7"></b><br /><br /><br />
+                                        <b id="sum8"></b>
+                                    </th> 
+                                    <th>
+                                        GENEL KREDİ<br />TOPLAMI :<br /><br /><br />
+                                        TOPLANAN<br /> KREDİ<br /> TOPLAMI :
+                                    </th>
+                                    <th>
+                                        <b id="sum9"></b><br /><br /><br />
+                                        <b id="sum10"></b>
+
+                                    </th>
+                                    <th>&nbsp;</th>
+                                    <th>&nbsp;</th>
+                                   
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class=" card-body">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="lokasyonCanvas" data-bs-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button id="clear" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div><!--end modal-header-->
+                <div class="modal-body">
+                    <form id="update-form">
+                        <input type="hidden" value="0" id="updateId" name="updateId" />
+                        <canvas id="BRCanvas" width="1100" height="1400" style="border:1px solid #000000;"></canvas>
+                    </form>
+                </div><!--end modal-body-->
+                <div class="modal-footer">
+                    <button class="btn btn-outline-warning" style="width:1300px" id="download">İndir</button>
+                </div><!--end modal-footer-->
+            </div>
+        </div>
+    </div>
+
+
+
+    @section scripts {
+
+
+    <script type="text/javascript" src="~/plugins/datatables/jszip.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/pdfmake.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/vfs_fonts.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/DataTables-1.13.1/js/dataTables.bootstrap5.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/datatables.buttons.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.bootstrap5.min.js"></script>
+    <script type="text/javascript" src="~/plugins/datatables/buttons.html5.min.js"></script>
+
+    <script type="text/javascript">
+
+
+        var locReportTablo = null;
+
+        $((_$) => {
+            getDate();
+
+        });
+
+        var getDate = () => {
+            var today = new Date();
+
+            document.getElementById("date1").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+        }
+
+        var showBusinessReport = () => {
+
+            var DateControl = document.getElementById("date1").value;
+
+            var checkControl = 0;
+            if (checkControl = document.getElementById('checkbox').checked == true) {
+                checkControl = 1;
+            }
+
+            if (checkControl == 1) {
+                $('#locReport_table').css('display', 'block');
+
+                if (locReportTablo != null) {
+                    locReportTablo.destroy();
+                    locReportTablo = null;
+                }
+
+
+                if (locReportTablo == null)
+                    locReportTablo = $('#locReport_table').DataTable({
+                        language: { url: '../dil.json' },
+                        processing: true,
+                        serverSide: true,
+                        paging: false,
+                        filter: true,
+                        orderMulti: true,
+                        order: [[1, "asc"]],
+                        ajax: {
+                            url: '@Url.Action("ShowLocationReport", "BusinessReport")',
+                            type: "POST",
+                            datatype: "json",
+                            data: function (d) {
+                                d.sDate = DateControl;
+                            }
+                        },
+                        createdRow: function (row, data, dataIndex) {
+
+                        },
+                        columnDefs: [],
+                        columns: [
+                            {
+                                "render": (data, type, row) => {
+                                    return row._locname;
+                                }, "name": "_locname"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return row._username;
+                                }, "name": "_username"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._toplanmasi_gereken).toFixed(2);
+                                }, "name": "_toplanmasi_gereken"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._toplanan).toFixed(2);
+                                }, "name": "_toplanan"
+                            },
+                            {
+                                "render": (data, type, row) => {
+
+                                    return '₺ ' + parseFloat(row._toplanan_nakit).toFixed(2);
+                                }, "name": "_toplanan_nakit"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._toplanan_kkarti).toFixed(2);
+                                }, "name": "_toplanan_kkarti"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._borc).toFixed(2);
+                                }, "name": "_borc"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._borc_nakit).toFixed(2);
+                                }, "name": "_borc_nakit"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._borc_kkarti).toFixed(2);
+                                }, "name": "_borc_kkarti"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._toplanan_genel).toFixed(2);
+                                }, "name": "_toplanan_genel"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._genel_nakit).toFixed(2);
+                                }, "name": "_genel_nakit"
+                            },
+                            {
+                                "render": (data, type, row) => {
+                                    return '₺ ' + parseFloat(row._genel_kkart).toFixed(2);
+                                }, "name": "_genel_kkart"
+                            },
+                        ],
+                        footerCallback: function (row, data, start, end, display) {
+
+                            let toplanması_gereken_t = 0;
+                            data.forEach(element => {
+                                toplanması_gereken_t += element._toplanmasi_gereken;
+                            })
+                            $('#sum1').html('₺ ' + toplanması_gereken_t);
+
+                            let borc_tahsilat_t = 0;
+                            data.forEach(element => {
+                                borc_tahsilat_t += element._borc;
+                            })
+                            $('#sum2').html('₺ ' + borc_tahsilat_t);
+
+                            let genel_toplam = 0;
+                            data.forEach(element => {
+                                genel_toplam += element._toplanan_genel;
+                            })
+                            $('#sum3').html('₺ ' + genel_toplam);
+
+                            let genel_toplanan_t = 0;
+                            data.forEach(element => {
+                                genel_toplanan_t += element._toplanan;
+                            })
+                            $('#sum4').html('₺ ' + genel_toplanan_t);
+
+                            let borc_tah_nakit_t = 0;
+                            data.forEach(element => {
+                                borc_tah_nakit_t += element._borc_nakit;
+                            })
+                            $('#sum5').html('₺ ' + borc_tah_nakit_t);
+
+                            let genel_nakit_t = 0;
+                            data.forEach(element => {
+                                genel_nakit_t += element._genel_nakit;
+                            })
+                            $('#sum6').html('₺ ' + genel_nakit_t);
+
+                            let toplanan_nakit_t = 0;
+                            data.forEach(element => {
+                                toplanan_nakit_t += element._toplanan_nakit;
+                            })
+                            $('#sum7').html('₺ ' + toplanan_nakit_t);
+
+                            let borc_tah_kredi_t = 0;
+                            data.forEach(element => {
+                                borc_tah_kredi_t += element._borc_kkarti;
+                            })
+                            $('#sum8').html('₺ ' + borc_tah_kredi_t);
+
+                            let genel_kredi_t = 0;
+                            data.forEach(element => {
+                                genel_kredi_t += element._genel_kkart;
+                            })
+                            $('#sum9').html('₺ ' + genel_kredi_t);
+
+                            let toplanan_kredi_t = 0;
+                            data.forEach(element => {
+                                toplanan_kredi_t += element._toplanan_kkarti;
+                            })
+                            $('#sum10').html('₺ ' + toplanan_kredi_t);
+
+
+                        },
+                        fixedColumns: true,
+                        scrollCollapse: true,
+                        dom: 'Bfrtip',
+                        buttons: [
+                            {
+                                extend: 'copy',
+                                className: 'btn blue',
+                                text: '<i class="far fa-copy"></i> Kopyala',
+                                footer: true,
+                                orientation: 'landscape',
+                                alignment: "center",
+                                exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                                customize: function (doc) {
+                                    doc.styles.tableHeader.alignment = 'left';
+                                    doc.content[1].table.widths = [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57];
+                                }
+
+                            },
+                            {
+                                extend: 'excel',
+                                className: 'btn green',
+                                text: '<i class="far fa-file-excel"></i> Excel',
+                                footer: true,
+                                orientation: 'landscape',
+                                alignment: "center",
+                                exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                                customize: function (doc) {
+                                    doc.styles.tableHeader.alignment = 'left';
+                                    doc.content[1].table.widths = [57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57, 57];
+                                }
+
+                            },
+                            {
+                                extend: 'pdf',
+                                className: 'btn red',
+                                text: '<i class="far fa-file-pdf"></i> PDF',
+                                footer: true,
+                                orientation: 'landscape',
+                                alignment: "center",
+                                exportOptions: { columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] },
+
+                                customize: function (doc) {
+                                    //var rowCount = doc.content[1].table.body.length;
+
+                                    //for (i = 1; i < rowCount; i++) {
+                                    //    doc.content[1].table.body[i][2].alignment = 'left';
+                                    //    doc.content[3].table.body[i][12].alignment = 'right';
+                                    //}
+                                    var iColumns = $('#locReport_table thead th').length;
+
+                                    var rowCount = document.getElementById("locReport_table").rows.length;
+                                    var groupByValue = $('#GroupByFilter option:selected').data('index');
+
+                                    for (i = 0; i < rowCount; i++) {
+
+                                        doc.content[1].table.body[i][iColumns - 11].alignment = 'left';
+                                        doc.content[1].table.body[i][iColumns - 12].alignment = 'left';
+
+                                    };
+
+
+                                    doc.styles.tableHeader.alignment = 'left';
+                                    doc.content[1].table.widths = [83, 95, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50];
+                                    doc.styles.tableBodyEven.alignment = 'right';
+                                    doc.styles.tableBodyOdd.alignment = 'right';
+                                    doc.styles.tableFooter.fontSize = 9;
+                                    doc.styles.tableHeader.fontSize = 9;
+                                }
+
+
+
+
+                            },
+
+                        ],
+                        initComplete: function (settings, json) {
+                            $('#locReport_table_filter input').unbind();
+                            $('#locReport_table_filter input').bind('keyup', function (e) {
+                                if (e.keyCode == 13) {
+                                    locReportTablo.search(this.value).draw();
+                                }
+                            });
+
+                            $('.dataTables_scrollBody').removeAttr('style').css({
+                                'position': 'relative',
+                                'overflow-y': 'auto',
+                                'overflow-x': 'hidden',
+                                'width': '100%',
+                                'max-height': ((window.innerHeight / 2) + 120) + 'px'
+                            });
+
+                        }
+
+                    })
+            }
+
+            $.post('@Url.Action("getIsletmeRaporu","BusinessReport")', { trh: DateControl }, (d, s) => {
+                if (s === 'success') {
+                    console.log(d.Data);
+                    $('#lokasyonCanvas').modal('show');
+
+                    var BRCanvas = document.getElementById("BRCanvas");
+                    var ctx = BRCanvas.getContext("2d");
+                    ctx.beginPath();
+
+                    var img = document.getElementById("esparkLogo");
+                    ctx.drawImage(img, 30, 10, 120, 120);
+
+                    var c_text1 = "Kentas Ltd. Sti.";
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text1, 500, 50);
+
+                    var c_text2 = "GENEL İŞLETME RAPORU";
+                    ctx.font = "27px serif";
+                    ctx.fillText(c_text2, 400, 85);
+                    //Yatay Line1
+                    ctx.moveTo(200, 100);
+                    ctx.lineTo(1050, 100);
+                    ctx.stroke();
+
+                    var c_tarih = d.Data.tarih;
+                    ctx.font = "16px serif";
+                    ctx.fillText(c_tarih, 980, 130);
+
+                    var c_text3 = "GENEL ADET TOPLAMLARI";
+                    ctx.font = "22px serif";
+                    ctx.fillText(c_text3, 30, 240);
+
+                    //Dikey Line1
+                    ctx.moveTo(30, 275);
+                    ctx.lineTo(30, 315);
+                    ctx.stroke();
+                    ctx.moveTo(30, 320);
+                    ctx.lineTo(30, 360);
+                    ctx.stroke();
+                    ctx.moveTo(30, 365);
+                    ctx.lineTo(30, 405);
+                    ctx.stroke();
+                    //Dikey Line2
+                    ctx.moveTo(430, 275);
+                    ctx.lineTo(430, 315);
+                    ctx.stroke();
+                    ctx.moveTo(430, 320);
+                    ctx.lineTo(430, 360);
+                    ctx.stroke();
+                    ctx.moveTo(430, 365);
+                    ctx.lineTo(430, 405);
+                    ctx.stroke();
+                    //Dikey Line3
+                    ctx.moveTo(510, 275);
+                    ctx.lineTo(510, 315);
+                    ctx.stroke();
+                    ctx.moveTo(510, 320);
+                    ctx.lineTo(510, 360);
+                    ctx.stroke();
+                    ctx.moveTo(510, 365);
+                    ctx.lineTo(510, 405);
+                    ctx.stroke();
+                    //Dikey Line4
+                    ctx.moveTo(900, 275);
+                    ctx.lineTo(900, 315);
+                    ctx.stroke();
+                    ctx.moveTo(900, 320);
+                    ctx.lineTo(900, 360);
+                    ctx.stroke();
+                    ctx.moveTo(900, 365);
+                    ctx.lineTo(900, 405);
+                    ctx.stroke();
+                    //Dikey Line5
+                    ctx.moveTo(1050, 275);
+                    ctx.lineTo(1050, 315);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 320);
+                    ctx.lineTo(1050, 360);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 365);
+                    ctx.lineTo(1050, 405);
+                    ctx.stroke();
+                    //Yatay Line2-3
+                    ctx.moveTo(30, 275);
+                    ctx.lineTo(1050, 275);
+                    ctx.stroke();
+                    ctx.moveTo(30, 315);
+                    ctx.lineTo(1050, 315);
+                    ctx.stroke();
+
+                    var c_text4 = "Çalışan Kullanıcı Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text4, 200, 300);
+                    var c_text5 = d.Data.user_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text5, 460, 300);
+                    var c_text6 = "Ücretin Tamamını Ödeyenler Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text6, 580, 300);
+                    var c_text7 = d.Data.odeyenler_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text7, 1000, 300);
+
+                    //Yatay Line4-5
+                    ctx.moveTo(30, 320);
+                    ctx.lineTo(1050, 320);
+                    ctx.stroke();
+                    ctx.moveTo(30, 360);
+                    ctx.lineTo(1050, 360);
+                    ctx.stroke();
+
+                    var c_text8 = "Lokasyon Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text8, 260, 345);
+                    var c_text9 = d.Data.lok_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text9, 460, 345);
+                    var c_text10 = "Ücretin Tamamını Ödemeyenler Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text10, 555, 345);
+                    var c_text11 = d.Data.odemeyenler_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text11, 1000, 345);
+
+                    //Yatay Line6-7
+                    ctx.moveTo(30, 365);
+                    ctx.lineTo(1050, 365);
+                    ctx.stroke();
+                    ctx.moveTo(30, 405);
+                    ctx.lineTo(1050, 405);
+                    ctx.stroke();
+
+                    var c_text8 = "Park Eden Araç Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text8, 210, 390);
+                    var c_text9 = d.Data.arac_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text9, 460, 390);
+                    var c_text10 = "Borçlu Araç Toplamı Toplamı:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text10, 640, 390);
+                    var c_text11 = d.Data.borclu_count;
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text11, 1000, 390);
+
+
+                    //Dikey Line1
+                    ctx.moveTo(30, 660);
+                    ctx.lineTo(30, 700);
+                    ctx.stroke();
+                    ctx.moveTo(30, 705);
+                    ctx.lineTo(30, 745);
+                    ctx.stroke();
+                    ctx.moveTo(410, 750);
+                    ctx.lineTo(410, 790);
+                    ctx.stroke();
+                    ctx.moveTo(30, 795);
+                    ctx.lineTo(30, 835);
+                    ctx.stroke();
+                    ctx.moveTo(410, 840);
+                    ctx.lineTo(410, 880);
+                    ctx.stroke();
+                    ctx.moveTo(30, 930);
+                    ctx.lineTo(30, 970);
+                    ctx.stroke();
+                    ctx.moveTo(410, 975);
+                    ctx.lineTo(410, 1015);
+                    ctx.stroke();
+                    //Dikey Line2
+                    ctx.moveTo(510, 660);
+                    ctx.lineTo(510, 700);
+                    ctx.stroke();
+                    ctx.moveTo(510, 705);
+                    ctx.lineTo(510, 745);
+                    ctx.stroke();
+                    ctx.moveTo(510, 750);
+                    ctx.lineTo(510, 790);
+                    ctx.stroke();
+                    ctx.moveTo(510, 795);
+                    ctx.lineTo(510, 835);
+                    ctx.stroke();
+                    ctx.moveTo(510, 840);
+                    ctx.lineTo(510, 880);
+                    ctx.stroke();
+                    ctx.moveTo(510, 930);
+                    ctx.lineTo(510, 970);
+                    ctx.stroke();
+                    ctx.moveTo(510, 975);
+                    ctx.lineTo(510, 1015);
+                    ctx.stroke();
+                    //Dikey Line3
+
+                    ctx.moveTo(680, 750);
+                    ctx.lineTo(680, 790);
+                    ctx.stroke();
+                    ctx.moveTo(680, 840);
+                    ctx.lineTo(680, 880);
+                    ctx.stroke();
+                    ctx.moveTo(680, 975);
+                    ctx.lineTo(680, 1015);
+                    ctx.stroke();
+                    //Dikey Line4
+
+                    ctx.moveTo(900, 750);
+                    ctx.lineTo(900, 790);
+                    ctx.stroke();
+                    ctx.moveTo(900, 840);
+                    ctx.lineTo(900, 880);
+                    ctx.stroke();
+                    ctx.moveTo(900, 975);
+                    ctx.lineTo(900, 1015);
+                    ctx.stroke();
+                    //Dikey Line5
+                    ctx.moveTo(1050, 660);
+                    ctx.lineTo(1050, 700);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 705);
+                    ctx.lineTo(1050, 745);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 750);
+                    ctx.lineTo(1050, 790);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 795);
+                    ctx.lineTo(1050, 835);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 840);
+                    ctx.lineTo(1050, 880);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 930);
+                    ctx.lineTo(1050, 970);
+                    ctx.stroke();
+                    ctx.moveTo(1050, 975);
+                    ctx.lineTo(1050, 1015);
+                    ctx.stroke();
+
+
+                    //Yatay Line 8-9
+                    ctx.moveTo(30, 660);
+                    ctx.lineTo(1050, 660);
+                    ctx.stroke();
+                    ctx.moveTo(30, 700);
+                    ctx.lineTo(1050, 700);
+                    ctx.stroke();
+                    var c_text12 = "TOPLANMASI GEREKEN PARKLANMA TOPLAMI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text12, 45, 685);
+                    var c_text13 = '₺ ' + parseFloat(d.Data.toplanmasi_gereken).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text13, 950, 685);
+
+                    //Yatay Line 10-11
+                    ctx.moveTo(30, 705);
+                    ctx.lineTo(1050, 705);
+                    ctx.stroke();
+                    ctx.moveTo(30, 745);
+                    ctx.lineTo(1050, 745);
+                    ctx.stroke();
+                    var c_text14 = "TOPLANAN PARKLANMA TOPLAMI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text14, 165, 730);
+                    var c_text15 = '₺ ' + parseFloat(d.Data.toplanan).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text15, 950, 730);
+
+                    //Yatay Line 12-13
+                    ctx.moveTo(410, 750);
+                    ctx.lineTo(1050, 750);
+                    ctx.stroke();
+                    ctx.moveTo(410, 790);
+                    ctx.lineTo(1050, 790);
+                    ctx.stroke();
+
+                    var c_text14 = "NAKİT:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text14, 435, 775);
+                    var c_text15 = '₺ ' + parseFloat(d.Data.toplanan_nakit).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text15, 590, 775);
+                    var c_text14 = "KREDİ KARTI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text14, 700, 775);
+                    var c_text15 = '₺ ' + parseFloat(d.Data.toplanan_kkarti).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text15, 950, 775);
+
+                    //Yatay Line 14-15
+                    ctx.moveTo(30, 795);
+                    ctx.lineTo(1050, 795);
+                    ctx.stroke();
+                    ctx.moveTo(30, 835);
+                    ctx.lineTo(1050, 835);
+                    ctx.stroke();
+
+                    var c_text14 = "TOPLANAN BORÇ TAHSİLATI TOPLAMI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text14, 125, 820);
+                    var c_text15 = '₺ ' + parseFloat(d.Data.borc).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text15, 950, 820);
+
+                    //Yatay Line 16-17
+                    ctx.moveTo(410, 840);
+                    ctx.lineTo(1050, 840);
+                    ctx.stroke();
+                    ctx.moveTo(410, 880);
+                    ctx.lineTo(1050, 880);
+                    ctx.stroke();
+
+                    var c_text16 = "NAKİT:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text16, 435, 865);
+                    var c_text17 = '₺ ' + parseFloat(d.Data.borc_nakit).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text17, 590, 865);
+                    var c_text18 = "KREDİ KARTI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text18, 700, 865);
+                    var c_text19 = '₺ ' + parseFloat(d.Data.borc_kkarti).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text19, 950, 865);
+
+                    //Yatay Line 18-19
+                    ctx.moveTo(30, 930);
+                    ctx.lineTo(1050, 930);
+                    ctx.stroke();
+                    ctx.moveTo(30, 970);
+                    ctx.lineTo(1050, 970);
+                    ctx.stroke();
+
+                    var c_text20 = "GENEL TAHSİLATI TOPLAMI:";
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text20, 210, 955);
+                    var c_text21 = '₺ ' + parseFloat(d.Data.toplanan_genel).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text21, 950, 955);
+
+                    //Yatay Line 20-21
+                    ctx.moveTo(410, 975);
+                    ctx.lineTo(1050, 975);
+                    ctx.stroke();
+                    ctx.moveTo(410, 1015);
+                    ctx.lineTo(1050, 1015);
+                    ctx.stroke();
+
+                    var c_text22 = "NAKİT:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text22, 435, 1000);
+                    var c_text23 = '₺ ' + parseFloat(d.Data.genel_nakit).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text23, 590, 1000);
+                    var c_text24 = "KREDİ KARTI:";
+                    ctx.font = "20px serif";
+                    ctx.fillText(c_text24, 700, 1000);
+                    var c_text25 = '₺ ' + parseFloat(d.Data.genel_kkart).toFixed(2);
+                    ctx.font = "bold 20px serif";
+                    ctx.fillText(c_text25, 950, 1000);
+
+
+                    ctx.moveTo(10, 1360);
+                    ctx.lineTo(1090, 1360);
+                    ctx.stroke();
+
+                    var c_text26 = d.Data.tarih2;
+                    ctx.font = "16px serif";
+                    ctx.fillText(c_text26, 20, 1385);
+
+                    var c_text27 = d.Data.firma;
+                    ctx.font = "16px serif";
+                    ctx.fillText(c_text27, 980, 1385);
+
+                    console.log(c_text26);
+
+                    ctx.closePath();
+
+                    document.getElementById('download').addEventListener('click', function (e) {
+                        // Convert our canvas to a data URL
+                        let canvasUrl = myCanvas.toDataURL();
+                        // Create an anchor, and set the href value to our data URL
+                        const createEl = document.createElement('a');
+                        createEl.href = canvasUrl;
+
+                        // This is the name of our downloaded file
+                        createEl.download = "download-this-canvas";
+
+                        // Click the download button, causing a download, and then remove it
+                        createEl.click();
+                        createEl.remove();
+                    });
+
+
+
+                    document.getElementById('clear').addEventListener('click', function (e) {
+                        console.log("sdf");
+                        ctx.clearRect(0, 0, BRCanvas.width, BRCanvas.height);
+
+                    }, false);
+
+
+
+
+
+
+                }
+            })
+
+        }
+
+    </script>
+}
